@@ -109,9 +109,7 @@ impl SimplicialComplex {
     pub fn compute_k_boundary_matrix(&self, dim:usize) -> DMatrix<i32> {
         let k_minus_one_simplices: Vec<Facet> = self.k_faces(dim-1);
         let k_simplices: Vec<Facet> = self.k_faces(dim);
-        let m = k_minus_one_simplices.len();
-        let n = k_simplices.len();
-        let mut matrix = DMatrix::from_element(m, n, 0);
+        let mut matrix = DMatrix::from_element(k_minus_one_simplices.len(), k_simplices.len(), 0);
         // Populate the matrix based on whether k-simplices are in the boundary of a k+1 simplex
         for (i, facet) in k_simplices.iter().enumerate() {
             let bdy = facet.boundary();
