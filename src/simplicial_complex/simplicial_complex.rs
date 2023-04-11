@@ -2,7 +2,6 @@ use nalgebra::DMatrix;
 use itertools::Itertools;
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
-
 pub trait Simplex {
     type Boundary: Sized;
     fn new(vertices: Vec<usize>) -> Self;
@@ -106,21 +105,29 @@ impl SimplicialComplex {
         k_faces_set.into_iter().collect()
     }
 
+    pub fn euler_characteristic(&self) -> i32{
+        let mut chi: i32 = 0;
+        for i in 0..self.dimension(){
+            chi += (-1 as i32).pow(i as u32) * self.k_faces(i).len() as i32;
+        }
+        chi
+    }
+
     pub fn compute_k_boundary_matrix(&self, dim:usize) -> DMatrix<i32> {
         let k_minus_one_simplices: Vec<Facet> = self.k_faces(dim-1);
         let k_simplices: Vec<Facet> = self.k_faces(dim);
-        let mut matrix = DMatrix::from_element(k_minus_one_simplices.len(), k_simplices.len(), 0);
+        let mut bdy_matrix = DMatrix::from_element(k_minus_one_simplices.len(), k_simplices.len(), 0);
         // Populate the matrix based on whether k-simplices are in the boundary of a k+1 simplex
         for (i, facet) in k_simplices.iter().enumerate() {
             let bdy = facet.boundary();
             for simplex in bdy {
                 let index = k_minus_one_simplices.iter().position(|x| simplex == x);
                 if let Some(j) = index {
-                    matrix[(j, i)] = 1
+                    bdy_matrix[(j, i)] = 1
                 }
             }
         }
     
-        matrix
+        bdy_matrix
     }
 }
