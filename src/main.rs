@@ -4,8 +4,9 @@ mod simplicial_complex{
 use simplicial_complex::simplicial_complex::{Facet, Simplex, SimplicialComplex};
 
 fn main() {
-    let facets: Vec<Facet> = vec![Simplex::new((0..3).collect()), Simplex::new((0..4).collect())];
-    let sc:SimplicialComplex = SimplicialComplex::new(facets);
+    let facets: Vec<Facet> = vec![Simplex::new((0..4).collect()), Simplex::new((0..4).collect())];
+    let bdy: Vec<Facet> = facets[0].boundary();
+    let sc:SimplicialComplex = SimplicialComplex::new(bdy);
     sc.print();
     let dim = 2;
     let faces = sc.k_faces(dim);
@@ -14,5 +15,6 @@ fn main() {
     }
     let m = sc.compute_k_boundary_matrix(dim);
     println!("The {}-dimensional boundary operator is:{}", dim, m);
+    println!("The {}-dimensional boundary operator is:{}", dim, sc.exchange_rows_and_cols(&m, 0));
     println!("This simplicial complex has Euler characteristic: {}", sc.euler_characteristic());
 }
