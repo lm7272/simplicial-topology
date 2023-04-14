@@ -2,6 +2,11 @@ use nalgebra::DMatrix;
 use itertools::Itertools;
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
+use log::{info};
+
+use crate::utils::utils::alternating_sum;
+use crate::utils::linear_algebra::{rank_smith_normal_matrix, row_nullity_smith_normal_matrix, gaussian_elimination};
+
 pub trait Simplex {
     type Boundary: Sized;
     fn new(vertices: Vec<usize>) -> Self;
@@ -94,7 +99,9 @@ impl SimplicialComplex {
     pub fn dimension(&self) -> usize{
         self.facets.iter().map(|v| v.dimension()).max().unwrap()
     }
-
+    pub fn k_skeleton(self, dim: usize) -> Self{
+        Self {facets: self.k_faces(dim)}
+    }
     pub fn k_faces(&self, dim: usize) -> Vec<Facet>{
         let mut k_faces: Vec<Facet> = vec![];
         for facet in &self.facets {
@@ -106,14 +113,12 @@ impl SimplicialComplex {
     }
 
     pub fn euler_characteristic(&self) -> i32{
-        let mut chi: i32 = 0;
-        for i in 0..(self.dimension()+1){
-            chi += (-1 as i32).pow(i as u32) * self.k_faces(i).len() as i32;
-        }
-        chi
+        let face_count: Vec<i32> = (0..(self.dimension()+1)).map(|x| self.k_faces(x).len() as i32).collect();
+        alternating_sum(&face_count)
     }
 
     pub fn compute_k_boundary_matrix(&self, dim:usize) -> DMatrix<i32> {
+        println!("Computing {}-dimensional boundary matrix", dim);
         let k_minus_one_simplices: Vec<Facet> = self.k_faces(dim-1);
         let k_simplices: Vec<Facet> = self.k_faces(dim);
         let mut bdy_matrix = DMatrix::from_element(k_minus_one_simplices.len(), k_simplices.len(), 0);
@@ -129,5 +134,21 @@ impl SimplicialComplex {
         }
     
         bdy_matrix
-    }    
+    }
+
+    pub fn kth_betti_number(self, dim: usize) -> i32 {
+        let m1 = gaussian_elimination(self.compute_k_boundary_matrix(dim));
+        let m2 = gaussian_elimination(self.compute_k_boundary_matrix(dim+1));
+        row_nullity_smith_normal_matrix(&m2) - rank_smith_normal_matrix(&m1)
+    }
+    pub fn betti_numbers(&self) -> Vec<i32>{
+        let dim = self.dimension();
+        let reduced_bdy_matrices: Vec<DMatrix<i32>> = (1..dim+2).map(|x| gaussian_elimination(self.compute_k_boundary_matrix(x))).collect_vec();
+        let mut betti_numbers: Vec<i32> = vec![row_nullity_smith_normal_matrix(&reduced_bdy_matrices[0])];
+        let tmp_betti_numbers: &mut Vec<i32> = &mut (0..dim-1).map(|x| row_nullity_smith_normal_matrix(&reduced_bdy_matrices[x+1]) - rank_smith_normal_matrix(&reduced_bdy_matrices[x])).collect_vec();
+        betti_numbers.append(tmp_betti_numbers);
+        betti_numbers.push((-1i32).pow(dim as u32)*(self.euler_characteristic() - alternating_sum(&betti_numbers)));
+        betti_numbers
+
+    }
 }
