@@ -1,10 +1,11 @@
 use std::hash::{Hash, Hasher};
+use itertools::Itertools;
 pub trait Simplex {
     type Boundary: Sized;
     fn new(vertices: Vec<usize>) -> Self;
-    fn facet(&mut self, vertices: Vec<usize>);
     fn dimension(&self) -> usize;
     fn boundary(&self) -> Self::Boundary;
+    fn sort(self) -> Self;
     fn print(&self);
 }
 
@@ -46,8 +47,8 @@ impl Simplex for Facet{
         Facet {vertices}
     }
 
-    fn facet(&mut self, vertices: Vec<usize>) {
-        self.vertices = vertices;
+    fn sort(self) -> Self {
+        Facet { vertices: self.vertices.into_iter().sorted().collect()}
     }
 
     fn dimension(&self) -> usize{

@@ -12,7 +12,8 @@ pub struct SimplicialComplex {
 
 impl SimplicialComplex {
     pub fn new(facets: Vec<Facet>) -> Self {
-        Self { facets }
+        Self {facets}
+        //Self { facets: facets.iter().map(|facet| facet.sort()).collect() }
     }
 
     pub fn new_from_vec(v: Vec<Vec<usize>>) -> Self{

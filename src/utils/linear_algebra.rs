@@ -30,6 +30,7 @@ pub fn gaussian_elimination(mut matrix: DMatrix<i32>) -> DMatrix<i32>{
     matrix
 }
 
+
 pub fn rank_smith_normal_matrix(smith_normal_matrix: &DMatrix<i32>) -> i32{
     let n = smith_normal_matrix.nrows().min(smith_normal_matrix.ncols());
     let mut running_rank = 0;
