@@ -15,6 +15,10 @@ impl SimplicialComplex {
         Self { facets }
     }
 
+    pub fn new_from_vec(v: Vec<Vec<usize>>) -> Self{
+        Self{ facets: v.into_iter().map(|x| Simplex::new(x)).collect() }
+    }
+
     pub fn print(&self) {
         println!("Simplicial Complex has dimension {}. The facets are:", self.dimension());
         for facet in &self.facets {
