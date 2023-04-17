@@ -17,12 +17,11 @@ impl Clone for SimplicialComplex{
 
 impl SimplicialComplex {
     pub fn new(facets: Vec<Facet>) -> Self {
-        Self {facets}
-        //Self { facets: facets.iter().map(|facet| facet.sort()).collect() }
+        Self { facets: facets.into_iter().map(|facet: Facet| facet.sort()).collect() }
     }
 
     pub fn new_from_vec(v: Vec<Vec<usize>>) -> Self{
-        Self{ facets: v.into_iter().map(|x| Simplex::new(x)).collect() }
+        Self::new(v.into_iter().map(|x| Simplex::new(x)).collect())
     }
 
     pub fn print(&self) {

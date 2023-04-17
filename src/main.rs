@@ -1,31 +1,35 @@
 use itertools::Itertools;
 use simplicial_topology::simplicial_complex::simplex::Simplex;
 use simplicial_topology::simplicial_complex::simplicial_complex::SimplicialComplex;
+use simplicial_topology::simplicial_complex::simplex::Facet;
 use simplicial_topology::simplicial_complex::hypergraph::{Hypergraph};
 use simplicial_topology::simplicial_complex::random_simplicial_complex::generate_random_hypergraph;
 
 fn main() {
-    // let hg = Hypergraph {
-    //     vertices: vec![1, 2, 3, 4, 6],
-    //     hyperedges: vec![
-    //         vec![1, 2],
-    //         vec![2, 3],
-    //         vec![3, 4],
-    //         vec![4, 1],
-    //         vec![2, 4],
-    //         vec![1,5],
-    //         vec![1,2,3]
-    //     ],
-    // };
+    let hg = Hypergraph {
+        vertices: vec![1, 2, 3, 4, 5, 6],
+        hyperedges: vec![
+            vec![1, 2],
+            vec![2, 3],
+            vec![1, 3],
+            vec![1, 4],
+            vec![2, 4],
+            vec![1, 5],
+            vec![1, 3, 4],
+            vec![1, 2, 4]
+        ],
+    };
     std::env::set_var("RUST_BACKTRACE", "1");
-    let hg = generate_random_hypergraph(30, vec![1.0,0.5,0.5,1.0]);
-    //print!("Vertices: {:?}\nHyperedges: {:?}\n", hg.vertices, hg.hyperedges);
+    //let hg = generate_random_hypergraph(30, vec![1.0,0.5,0.5,0.1]);
+    print!("Vertices: {:?}\nHyperedges: {:?}\n", hg.vertices, hg.hyperedges);
+    let simplex: Facet = Simplex::new((0..7).collect());
+    //let sc = SimplicialComplex::new(simplex.boundary());
     let sc = hg.clone().downward_closure();
-    //sc.print();
+    sc.print();
     println!("Betti vector is: {:?}", sc.betti_numbers());
     println!("This simplicial complex has Euler characteristic: {}", sc.euler_characteristic());
     let sc2 = hg.upward_closure();
-    //sc2.print();
+    sc2.print();
     println!("Betti vector is: {:?}", sc2.betti_numbers());
     println!("This simplicial complex has Euler characteristic: {}", sc2.euler_characteristic());
     //sc.clone().star(&Simplex::new(vec![1])).print();

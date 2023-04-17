@@ -35,7 +35,6 @@ pub fn filter_downward_closed_sets(mut s: Vec<Vec<usize>>) -> Vec<Vec<usize>> {
             subset.remove(elem);
             subset
         }).collect::<Vec<HashSet<usize>>>().iter().all(|subset| {
-
             result.contains(&subset)});
         if boundary_present {
             result.push(set);
