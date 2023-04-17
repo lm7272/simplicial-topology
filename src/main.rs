@@ -1,4 +1,3 @@
-use itertools::Itertools;
 use simplicial_topology::simplicial_complex::simplex::Simplex;
 use simplicial_topology::simplicial_complex::simplicial_complex::SimplicialComplex;
 use simplicial_topology::simplicial_complex::simplex::Facet;
