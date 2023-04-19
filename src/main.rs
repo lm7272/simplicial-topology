@@ -1,6 +1,5 @@
 use simplicial_topology::simplicial_complex::simplex::Simplex;
-use simplicial_topology::simplicial_complex::simplicial_complex::{SimplicialComplex, self};
-use simplicial_topology::simplicial_complex::simplex::Facet;
+use simplicial_topology::simplicial_complex::simplicial_complex::SimplicialComplex;
 use simplicial_topology::simplicial_complex::hypergraph::{Hypergraph};
 use simplicial_topology::simplicial_complex::random_simplicial_complex::generate_random_hypergraph;
 
