@@ -2,6 +2,7 @@ use nalgebra::DMatrix;
 use itertools::Itertools;
 use std::collections::HashSet;
 use num_integer::binomial;
+use rayon::prelude::*;
 
 use crate::utils::utils::{alternating_sum, filter_maximal_sets};
 use crate::utils::linear_algebra::{rank_smith_normal_matrix, row_nullity_smith_normal_matrix, gaussian_elimination};
@@ -116,9 +117,11 @@ impl SimplicialComplex {
             return vec![]
         }
         let dim = self.dimension() as usize;
-        let reduced_bdy_matrices: Vec<DMatrix<i32>> = (1..dim+1).map(|x| gaussian_elimination(self.compute_k_boundary_matrix(x))).collect_vec();
-        let mut betti_numbers: Vec<i32> = vec![row_nullity_smith_normal_matrix(&reduced_bdy_matrices[0])];
-        let tmp_betti_numbers: &mut Vec<i32> = &mut (0..dim-1).map(|x| row_nullity_smith_normal_matrix(&reduced_bdy_matrices[x+1]) - rank_smith_normal_matrix(&reduced_bdy_matrices[x])).collect_vec();
+        let dimensions: Vec<usize> = (1..(dim+1)).collect();
+        let mut bdy_matrices: Vec<DMatrix<i32>> = dimensions.into_par_iter().map(|x| self.compute_k_boundary_matrix(x)).collect();
+        bdy_matrices= bdy_matrices.into_iter().map(|mat| gaussian_elimination(mat)).collect_vec();
+        let mut betti_numbers: Vec<i32> = vec![row_nullity_smith_normal_matrix(&bdy_matrices[0])];
+        let tmp_betti_numbers: &mut Vec<i32> = &mut (0..dim-1).map(|x| row_nullity_smith_normal_matrix(&bdy_matrices[x+1]) - rank_smith_normal_matrix(&bdy_matrices[x])).collect_vec();
         betti_numbers.append(tmp_betti_numbers);
         betti_numbers.push((-1i32).pow(dim as u32)*(self.euler_characteristic() - alternating_sum(&betti_numbers)));
         betti_numbers
