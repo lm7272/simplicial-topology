@@ -22,6 +22,7 @@ fn main() {
     print!("Vertices: {:?}\nHyperedges: {:?}\n", hg.vertices, hg.hyperedges);
     let simplicial_complex = SimplicialComplex::new(vec![Simplex::new((0..5).collect()),Simplex::new((0..7).collect())]);
     simplicial_complex.print();
+    simplicial_complex.contains_full_k_skeleton(4);
     //let sc = SimplicialComplex::new(simplex.boundary());
     let sc = hg.clone().downward_closure();
     sc.print();

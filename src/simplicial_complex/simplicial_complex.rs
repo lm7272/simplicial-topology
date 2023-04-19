@@ -1,6 +1,7 @@
 use nalgebra::DMatrix;
 use itertools::Itertools;
 use std::collections::HashSet;
+use num_integer::binomial;
 
 use crate::utils::utils::{alternating_sum, filter_maximal_sets};
 use crate::utils::linear_algebra::{rank_smith_normal_matrix, row_nullity_smith_normal_matrix, gaussian_elimination};
@@ -93,9 +94,13 @@ impl SimplicialComplex {
         Self { facets: self.star(&simplex).facets.into_iter().map(|f| f.link(&simplex)).collect()}
     }
 
-    // fn contains_k_skeleton(self, dim: usize){
-    //     self.k_faces(dim).len()
-    // }
+    pub fn contains_full_k_skeleton(&self, dim: usize) -> bool{
+        if (self.dimension() < 0) | (dim > self.dimension() as usize){
+            return false
+        }
+        let num_faces = self.k_faces(dim).len();
+        num_faces == binomial(self.k_faces(0).len(), dim +1)
+    }
 
     fn is_connected(self) -> bool{
         self.kth_betti_number(0) == 1
