@@ -1,5 +1,5 @@
 use simplicial_topology::simplicial_complex::simplex::Simplex;
-use simplicial_topology::simplicial_complex::simplicial_complex::SimplicialComplex;
+use simplicial_topology::simplicial_complex::simplicial_complex::{SimplicialComplex, self};
 use simplicial_topology::simplicial_complex::simplex::Facet;
 use simplicial_topology::simplicial_complex::hypergraph::{Hypergraph};
 use simplicial_topology::simplicial_complex::random_simplicial_complex::generate_random_hypergraph;
@@ -21,7 +21,8 @@ fn main() {
     std::env::set_var("RUST_BACKTRACE", "1");
     //let hg = generate_random_hypergraph(30, vec![1.0,0.5,0.5,0.1]);
     print!("Vertices: {:?}\nHyperedges: {:?}\n", hg.vertices, hg.hyperedges);
-    let simplex: Facet = Simplex::new((0..7).collect());
+    let simplicial_complex = SimplicialComplex::new(vec![Simplex::new((0..5).collect()),Simplex::new((0..7).collect())]);
+    simplicial_complex.print();
     //let sc = SimplicialComplex::new(simplex.boundary());
     let sc = hg.clone().downward_closure();
     sc.print();

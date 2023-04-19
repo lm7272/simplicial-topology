@@ -2,7 +2,7 @@ use nalgebra::DMatrix;
 use itertools::Itertools;
 use std::collections::HashSet;
 
-use crate::utils::utils::alternating_sum;
+use crate::utils::utils::{alternating_sum, filter_maximal_sets};
 use crate::utils::linear_algebra::{rank_smith_normal_matrix, row_nullity_smith_normal_matrix, gaussian_elimination};
 use crate::simplicial_complex::simplex::{Simplex, Facet};
 
@@ -17,11 +17,12 @@ impl Clone for SimplicialComplex{
 
 impl SimplicialComplex {
     pub fn new(facets: Vec<Facet>) -> Self {
-        Self { facets: facets.into_iter().map(|facet: Facet| facet.sort()).collect() }
+        Self::new_from_vec(facets.into_iter().map(|facet: Facet| facet.vertices).collect())
     }
 
     pub fn new_from_vec(v: Vec<Vec<usize>>) -> Self{
-        Self::new(v.into_iter().map(|x| Simplex::new(x)).collect())
+        let facets: Vec<Facet> = filter_maximal_sets(v).into_iter().map(|x| Simplex::new(x)).collect();
+        Self { facets: facets.into_iter().map(|facet| facet.sort()).collect() }
     }
 
     pub fn print(&self) {
