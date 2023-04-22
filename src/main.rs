@@ -1,7 +1,7 @@
 use simplicial_topology::simplicial_complex::simplex::Simplex;
 use simplicial_topology::simplicial_complex::simplicial_complex::SimplicialComplex;
 use simplicial_topology::simplicial_complex::hypergraph::{Hypergraph};
-use simplicial_topology::simplicial_complex::random_simplicial_complex::generate_random_hypergraph;
+use simplicial_topology::simplicial_complex::random_simplicial_complex::{generate_random_hypergraph, generate_random_simplicial_complex, Model};
 
 fn main() {
     let hg = Hypergraph {
@@ -18,7 +18,11 @@ fn main() {
         ],
     };
     std::env::set_var("RUST_BACKTRACE", "1");
-    let hg = generate_random_hypergraph(50, vec![1.0,0.5,0.25,0.1]);
+    println!("generating random hypergraph");
+    let hg = generate_random_hypergraph(50, vec![1.0,1.0,1.0,0.1]);
+    let sc = generate_random_simplicial_complex(Model::LinialMeshulam { num_vertices: 20, dimension: 3, prob: 0.1 });
+    sc.print();
+    println!("Betti vector is: {:?}", sc.betti_numbers());
     //print!("Vertices: {:?}\nHyperedges: {:?}\n", hg.vertices, hg.hyperedges);
     let simplicial_complex = SimplicialComplex::new(vec![Simplex::new((0..5).collect()),Simplex::new((0..7).collect())]);
     simplicial_complex.print();

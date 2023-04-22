@@ -61,6 +61,12 @@ pub fn filter_downward_closed_sets(s: Vec<Vec<usize>>) -> Vec<Vec<usize>> {
 }
 
 pub fn randomly_select_items_from_vec<T: Clone>(v: &Vec<T>, p: f64) -> Vec<T> {
+    if p == 0.0 {
+        return Vec::new()
+    }
+    else if p == 1.0 {
+        return v.clone()
+    }
     let mut rng = thread_rng();
     v.iter()
         .filter(|_| rng.gen_bool(p))

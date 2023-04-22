@@ -2,6 +2,14 @@ use crate::utils::utils::{randomly_select_items_from_vec, subvectors};
 
 use crate::simplicial_complex::hypergraph::Hypergraph;
 
+use super::simplicial_complex::SimplicialComplex;
+
+pub enum Model {
+    Lower {num_vertices: usize, prob_vec: Vec<f64>},
+    Upper {num_vertices: usize, prob_vec: Vec<f64>},
+    LinialMeshulam {num_vertices: usize, dimension: usize, prob: f64}
+}
+
 pub fn generate_random_hypergraph(num_vertices: usize, prob_vec: Vec<f64>) -> Hypergraph{
     let possible_vertices: Vec<usize> = (0..num_vertices).collect();
     let vertices: Vec<usize> = randomly_select_items_from_vec(&possible_vertices, prob_vec[0]);
@@ -11,7 +19,26 @@ pub fn generate_random_hypergraph(num_vertices: usize, prob_vec: Vec<f64>) -> Hy
         hyperedges.append(&mut randomly_select_items_from_vec(&k_hyperedges, prob_vec[k]));
     }
     Hypergraph {
-        vertices: vertices,
-        hyperedges: hyperedges
+        vertices,
+        hyperedges
     }
+}
+pub fn generate_random_simplicial_complex(model: Model) -> SimplicialComplex{
+
+    let sc = match model {
+        Model::LinialMeshulam { num_vertices, dimension, prob } => {
+            let mut prob_vec: Vec<f64> = vec![0, dimension - 2].into_iter().map(|x| x as f64).collect::<Vec<f64>>();
+            prob_vec.push(1.0);
+            prob_vec.push(prob);
+            generate_random_hypergraph(num_vertices, prob_vec).upward_closure()
+        },
+        Model::Lower { num_vertices, prob_vec } => {
+            generate_random_hypergraph(num_vertices, prob_vec).downward_closure()
+        },
+        Model::Upper { num_vertices, prob_vec } => {
+            generate_random_hypergraph(num_vertices, prob_vec).upward_closure()
+        },
+
+    };
+    sc
 }
