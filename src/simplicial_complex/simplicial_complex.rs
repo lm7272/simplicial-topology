@@ -8,9 +8,26 @@ use crate::utils::utils::{alternating_sum, filter_maximal_sets};
 use crate::utils::linear_algebra::{rank_smith_normal_matrix, row_nullity_smith_normal_matrix, gaussian_elimination};
 use crate::simplicial_complex::simplex::{Simplex, Facet};
 
+#[derive(Debug)]
 pub struct SimplicialComplex {
     facets: Vec<Facet>,
 }
+
+impl PartialEq for SimplicialComplex {
+    fn eq(&self, other: &Self) -> bool {
+        if self.facets.len() != other.facets.len() {
+            return false;
+        }
+        for (i, facet) in self.facets.iter().enumerate() {
+            if !other.facets.contains(facet){
+                return false;
+            }
+        }
+        true
+    }
+}
+
+
 impl Clone for SimplicialComplex{
     fn clone(&self) -> Self {
         Self { facets: self.facets.clone() }
@@ -39,7 +56,7 @@ impl SimplicialComplex {
         self.facets.iter().map(|v| v.dimension()).max().unwrap()
     }
     pub fn k_skeleton(self, dim: usize) -> Self{
-        Self {facets: self.k_faces(dim)}
+        Self::new((0..(dim+1)).flat_map(|k| self.k_faces(k)).collect())
     }
     pub fn k_faces(&self, dim: usize) -> Vec<Facet>{
         if self.dimension() < 0 {
