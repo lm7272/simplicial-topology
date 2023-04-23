@@ -19,9 +19,9 @@ fn main() {
     };
     std::env::set_var("RUST_BACKTRACE", "1");
     println!("generating random hypergraph");
-    let hg = generate_random_hypergraph(50, vec![1.0,1.0,1.0,0.1]);
+    let hg = generate_random_hypergraph(20, vec![1.0,1.0,1.0,0.1]);
     let sc = generate_random_simplicial_complex(Model::LinialMeshulam { num_vertices: 20, dimension: 3, prob: 0.1 });
-    sc.print();
+    //sc.print();
     println!("Betti vector is: {:?}", sc.betti_numbers());
     //print!("Vertices: {:?}\nHyperedges: {:?}\n", hg.vertices, hg.hyperedges);
     let simplicial_complex = SimplicialComplex::new(vec![Simplex::new((0..5).collect()),Simplex::new((0..7).collect())]);
@@ -29,7 +29,7 @@ fn main() {
     //simplicial_complex.contains_full_k_skeleton(4);
     //let sc = SimplicialComplex::new(simplex.boundary());
     let sc = hg.clone().downward_closure();
-    sc.print();
+    //sc.print();
     println!("Betti vector is: {:?}", sc.betti_numbers());
     println!("This simplicial complex has Euler characteristic: {}", sc.euler_characteristic());
     // let sc2 = hg.upward_closure();

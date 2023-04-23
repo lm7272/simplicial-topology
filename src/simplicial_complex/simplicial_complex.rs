@@ -34,6 +34,7 @@ impl SimplicialComplex {
         }
     }
 
+
     pub fn dimension(&self) -> isize{
         self.facets.iter().map(|v| v.dimension()).max().unwrap()
     }
@@ -49,7 +50,8 @@ impl SimplicialComplex {
         }
         let mut k_faces: Vec<Facet> = vec![];
         for facet in &self.facets {
-            k_faces.extend(facet.vertices.iter()
+            let vertices = &facet.vertices;
+            k_faces.extend(vertices.iter()
             .combinations(dim+1).map(|c| Facet::new(c.into_iter().copied().collect_vec())))
         }
         let k_faces_set: HashSet<Facet> = k_faces.into_iter().collect();
@@ -65,7 +67,11 @@ impl SimplicialComplex {
         alternating_sum(&face_count)
     }
 
-    pub fn compute_k_boundary_matrix(&self, dim:usize) -> DMatrix<i32> {
+    fn compute_reduced_k_boundary_matrix(&self, dim: usize) -> DMatrix<i32>{
+        gaussian_elimination(self.compute_k_boundary_matrix(dim))
+    }
+
+    fn compute_k_boundary_matrix(&self, dim:usize) -> DMatrix<i32> {
         println!("Computing {}-dimensional boundary matrix", dim);
         let k_minus_one_simplices: Vec<Facet> = self.k_faces(dim-1);
         let k_simplices: Vec<Facet> = self.k_faces(dim);
@@ -103,14 +109,17 @@ impl SimplicialComplex {
         num_faces == binomial(self.k_faces(0).len(), dim +1)
     }
 
-    fn is_connected(self) -> bool{
+    pub fn is_connected(&self) -> bool{
         self.kth_betti_number(0) == 1
     }
 
-    pub fn kth_betti_number(self, dim: usize) -> i32 {
-        let m1 = gaussian_elimination(self.compute_k_boundary_matrix(dim));
-        let m2 = gaussian_elimination(self.compute_k_boundary_matrix(dim+1));
-        row_nullity_smith_normal_matrix(&m2) - rank_smith_normal_matrix(&m1)
+    pub fn kth_betti_number(&self, dim: usize) -> i32 {
+        if dim == 0 {
+            return row_nullity_smith_normal_matrix(&self.compute_reduced_k_boundary_matrix(1))
+        }
+        let m1 = &self.compute_reduced_k_boundary_matrix(dim);
+        let m2 = &self.compute_reduced_k_boundary_matrix(dim+1);
+        row_nullity_smith_normal_matrix(m2) - rank_smith_normal_matrix(m1)
     }
     pub fn betti_numbers(&self) -> Vec<i32>{
         if self.dimension() < 0{
@@ -118,8 +127,7 @@ impl SimplicialComplex {
         }
         let dim = self.dimension() as usize;
         let dimensions: Vec<usize> = (1..(dim+1)).collect();
-        let mut bdy_matrices: Vec<DMatrix<i32>> = dimensions.into_par_iter().map(|x| self.compute_k_boundary_matrix(x)).collect();
-        bdy_matrices= bdy_matrices.into_iter().map(|mat| gaussian_elimination(mat)).collect_vec();
+        let bdy_matrices: Vec<DMatrix<i32>> = dimensions.into_par_iter().map(|x| self.compute_reduced_k_boundary_matrix(x)).collect();
         let mut betti_numbers: Vec<i32> = vec![row_nullity_smith_normal_matrix(&bdy_matrices[0])];
         let tmp_betti_numbers: &mut Vec<i32> = &mut (0..dim-1).map(|x| row_nullity_smith_normal_matrix(&bdy_matrices[x+1]) - rank_smith_normal_matrix(&bdy_matrices[x])).collect_vec();
         betti_numbers.append(tmp_betti_numbers);
