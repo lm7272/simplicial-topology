@@ -44,6 +44,19 @@ impl SimplicialComplex {
         Self { facets: facets.into_iter().map(|facet| facet.sort()).collect() }
     }
 
+    pub fn add_simplex(&mut self, simplex: Facet){
+        let bdy = Self { facets: simplex.boundary() };
+        if self.has_subcomplex(&bdy) &
+            (!self.has_subcomplex(&Self { facets: vec![simplex.clone()]}))
+        {
+            self.facets.retain(|facet| !bdy.facets.contains(facet));
+            self.facets.push(simplex);
+        }
+        else {
+            panic!("The boundary of {:?} is not contained in the simplicial complex.", simplex.vertices);
+        }
+    }
+
     pub fn print(&self) {
         println!("Simplicial Complex has dimension {}. The facets are:", self.dimension());
         for facet in &self.facets {
@@ -116,6 +129,15 @@ impl SimplicialComplex {
 
     pub fn link(self, simplex: &Facet) -> Self{
         Self { facets: self.star(&simplex).facets.into_iter().map(|f| f.link(&simplex)).collect()}
+    }
+
+    pub fn has_subcomplex(&self, sc: &SimplicialComplex) -> bool{
+        for f in &sc.facets{
+            if !self.facets.iter().any(|x| x.has_subface(f)){
+                return false
+            }
+        }
+        true
     }
 
     pub fn contains_full_k_skeleton(&self, dim: usize) -> bool{
