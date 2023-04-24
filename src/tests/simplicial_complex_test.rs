@@ -6,8 +6,7 @@ use crate::simplicial_complex::simplicial_complex::SimplicialComplex;
 #[cfg(test)]
 #[test]
 fn test_full_skeleton_present() {
-
-    let sc_full_skeleton = SimplicialComplex::new_from_vec(vec![(0..7).collect()]);
+    let sc_full_skeleton = SimplicialComplex::new_from_vec(vec![(1..8).collect()]);
     let sc_no_full_skeleton = SimplicialComplex::new_from_vec(vec![(0..3).collect(), (1..4).collect()]);
     for k in 0..7{
         assert_eq!(sc_full_skeleton.contains_full_k_skeleton(k), true);
