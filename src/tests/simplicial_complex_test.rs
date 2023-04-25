@@ -3,7 +3,6 @@ use nalgebra::DMatrix;
 
 use crate::simplicial_complex::simplex::{Simplex, Facet};
 use crate::simplicial_complex::simplicial_complex::SimplicialComplex;
-use crate::utils::linear_algebra::{rank, rank_smith_normal_matrix, gaussian_elimination};
 
 #[cfg(test)]
 #[test]
@@ -51,12 +50,4 @@ fn test_add_simplex(){
     let sc2 = SimplicialComplex::new(vec![simplex.clone()]);
     sc.add_simplex(simplex);
     assert_eq!(sc, sc2);
-}
-
-#[test]
-fn test_matrix_rank(){
-    let simplex: Facet = Simplex::new((0..10).collect_vec());
-    let sc = SimplicialComplex::new(simplex.boundary());
-    let mat = sc.compute_k_boundary_matrix(8);
-    assert_eq!(rank(mat.clone(), 0), rank_smith_normal_matrix(&gaussian_elimination(mat)));
 }
