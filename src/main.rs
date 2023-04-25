@@ -20,7 +20,7 @@ fn main() {
     std::env::set_var("RUST_BACKTRACE", "1");
     println!("generating random hypergraph");
     let hg = generate_random_hypergraph(20, vec![1.0,1.0,1.0,0.1]);
-    let sc = generate_random_simplicial_complex(Model::LinialMeshulam { num_vertices: 20, dimension: 3, prob: 0.1 });
+    let sc = generate_random_simplicial_complex(Model::Pure { num_vertices: 20, dimension: 3, prob: 0.1, include_all_vertices: true });
     //sc.print();
     println!("Betti vector is: {:?}", sc.betti_numbers());
     //print!("Vertices: {:?}\nHyperedges: {:?}\n", hg.vertices, hg.hyperedges);

@@ -1,10 +1,11 @@
+#[cfg(test)]
+
 use itertools::Itertools;
 use nalgebra::DMatrix;
 
 use crate::simplicial_complex::simplex::{Simplex, Facet};
 use crate::simplicial_complex::simplicial_complex::SimplicialComplex;
 
-#[cfg(test)]
 #[test]
 fn test_full_skeleton_present() {
     let sc_full_skeleton = SimplicialComplex::new_from_vec(vec![(1..8).collect()]);

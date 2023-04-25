@@ -15,6 +15,6 @@ ndarray = "0.15.6"
 criterion = {version = "0.4.0", features = ["html_reports"]}
 
 [[bench]]
-name="betti_benchmark"
+name="simplicial_complex_benchmark"
 harness=false
 

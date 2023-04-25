@@ -18,7 +18,7 @@ impl PartialEq for SimplicialComplex {
         if self.facets.len() != other.facets.len() {
             return false;
         }
-        for (i, facet) in self.facets.iter().enumerate() {
+        for (_, facet) in self.facets.iter().enumerate() {
             if !other.facets.contains(facet){
                 return false;
             }
@@ -102,7 +102,7 @@ impl SimplicialComplex {
     }
 
     pub fn compute_k_boundary_matrix(&self, dim:usize) -> DMatrix<i32> {
-        println!("Computing {}-dimensional boundary matrix", dim);
+        //println!("Computing {}-dimensional boundary matrix", dim);
         let k_minus_one_simplices: Vec<Facet> = self.k_faces(dim-1);
         let k_simplices: Vec<Facet> = self.k_faces(dim);
         let mut bdy_matrix = DMatrix::from_element(k_minus_one_simplices.len(), k_simplices.len(), 0);
