@@ -1,10 +1,7 @@
 use std::ops::AddAssign;
 use nalgebra::DMatrix;
 
-//IDEA: compute the rank all at once using recursion
-pub fn rank(mut matrix: DMatrix<i32>, start_val: usize) -> usize{
-    // if no rows to move about return start_val,
-    //otherwise do all the rows swaps, and call the func again on the matrix without first col/row and start_val+1
+pub fn rank(mut matrix: DMatrix<i32>, start_val: i32) -> i32{
     match (1..matrix.nrows()).flat_map(|i| (0..matrix.ncols()).map(move |j| (i, j))).find(|&(i, j)| matrix[(i, j)] == 1) {
         Some((i, j)) => {
             matrix.swap_rows(0, i);

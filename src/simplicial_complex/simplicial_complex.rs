@@ -101,7 +101,7 @@ impl SimplicialComplex {
         gaussian_elimination(self.compute_k_boundary_matrix(dim))
     }
 
-    fn compute_k_boundary_matrix(&self, dim:usize) -> DMatrix<i32> {
+    pub fn compute_k_boundary_matrix(&self, dim:usize) -> DMatrix<i32> {
         println!("Computing {}-dimensional boundary matrix", dim);
         let k_minus_one_simplices: Vec<Facet> = self.k_faces(dim-1);
         let k_simplices: Vec<Facet> = self.k_faces(dim);
