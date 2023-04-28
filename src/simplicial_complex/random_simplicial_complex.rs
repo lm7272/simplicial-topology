@@ -44,7 +44,6 @@ pub fn par_generate_random_hypergraph(num_vertices: usize, prob_vec: Vec<f64>) -
 }
 
 pub fn generate_random_simplicial_complex(model: Model) -> SimplicialComplex{
-
     let sc = match model {
         Model::LinialMeshulam { num_vertices, dimension, prob } => {
             let mut prob_vec: Vec<f64> = vec![0; dimension - 1].into_iter().map(|x| x as f64).collect::<Vec<f64>>();
