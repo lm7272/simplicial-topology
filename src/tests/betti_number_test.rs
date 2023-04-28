@@ -50,6 +50,6 @@ fn test_from_hypergraph_downward() {
             vec![1, 4, 2]
         ],
     };
-    let sc = hg.downward_closure();
+    let sc = hg.par_downward_closure();
     assert_eq!(sc.betti_numbers(), vec![2,1,0])
 }

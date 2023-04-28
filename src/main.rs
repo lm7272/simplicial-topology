@@ -28,7 +28,7 @@ fn main() {
     simplicial_complex.print();
     //simplicial_complex.contains_full_k_skeleton(4);
     //let sc = SimplicialComplex::new(simplex.boundary());
-    let sc = hg.clone().downward_closure();
+    let sc = hg.clone().par_downward_closure();
     //sc.print();
     println!("Betti vector is: {:?}", sc.betti_numbers());
     println!("This simplicial complex has Euler characteristic: {}", sc.euler_characteristic());

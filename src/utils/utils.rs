@@ -41,35 +41,47 @@ pub fn filter_maximal_sets(mut s: Vec<Vec<usize>>) -> Vec<Vec<usize>> {
 /// The final step keeps only the maximal remaining vectors, for memory succinctness.
 /// 
 /// TODO: benchmark non parallel code to check this is better
-pub fn filter_downward_closed_sets(s: Vec<Vec<usize>>) -> Vec<Vec<usize>> {
-    let mut subsets_by_length: HashMap<usize, Vec<HashSet<usize>>> = s
+pub fn par_filter_downward_closed_sets(mut s: Vec<Vec<usize>>) -> Vec<Vec<usize>> {
+    for v in s.iter_mut(){
+        v.sort();
+    }
+    let mut subsets_by_length: HashMap<usize, Vec<Vec<usize>>> = s
     .into_iter()
     .group_by(|subset| subset.len())
     .into_iter()
     .fold(HashMap::new(), |mut acc, (key, group)| {
-        let vecs = group.map(|v| v.into_iter().collect_vec()).map(HashSet::from_iter).collect();
+        let vecs = group.collect();
         acc.insert(key, vecs);
         acc
     });
-    
-    let  result = Arc::new(Mutex::new(vec![HashSet::new()]));
+    let mut result: Vec<Vec<usize>> = vec![vec![]];
     for i in 1..(subsets_by_length.len()+1){
         let subsets = subsets_by_length.get_mut(&i).unwrap();
-        let push_set = |set: &HashSet<usize>| {
-            let boundary_present = set.par_iter().map(|elem| {
-                let mut subset = set.clone();
-                subset.remove(elem);
-                subset
-            }).collect::<Vec<HashSet<usize>>>().iter().all(|subset| {
-                result.lock().unwrap().contains(subset)});
-            if boundary_present {
-                result.lock().unwrap().push(set.clone());
-            }
-        };
-        subsets.par_iter().for_each(push_set);
+        let mut filtered_subsets: Vec<Vec<usize>> = subsets.par_iter()
+                                                            .filter(|face| subvectors(*face, i-1).iter().all(|vec| result.contains(vec)))
+                                                            .cloned()
+                                                            .collect();
+        result.append(&mut filtered_subsets);
     }
-    let final_result = result.lock().unwrap();
-    filter_maximal_sets(final_result.iter().map(|set| set.into_iter().cloned().collect()).collect::<Vec<Vec<usize>>>())
+    filter_maximal_sets(result)
+}
+
+pub fn filter_downward_closed_sets(mut s: Vec<Vec<usize>>) -> Vec<Vec<usize>> {
+    s.sort_by_cached_key(|x| !x.len());
+    let mut subsets: Vec<HashSet<usize>> = s.into_iter().map(HashSet::from_iter).collect();
+    let mut result: Vec<HashSet<usize>> = vec![HashSet::new()];
+    while let Some(set) = subsets.pop() {
+        let boundary_present = set.iter().map(|elem| {
+            let mut subset = set.clone();
+            subset.remove(elem);
+            subset
+        }).collect::<Vec<HashSet<usize>>>().iter().all(|subset| {
+            result.contains(&subset)});
+        if boundary_present {
+            result.push(set);
+        }
+    }
+    filter_maximal_sets(result.into_iter().map(|set| set.into_iter().collect()).collect::<Vec<Vec<usize>>>())
 }
 
 pub fn randomly_select_items_from_vec<T: Clone>(v: &Vec<T>, p: f64) -> Vec<T> {

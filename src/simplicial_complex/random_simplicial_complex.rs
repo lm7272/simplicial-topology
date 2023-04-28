@@ -34,7 +34,7 @@ pub fn generate_random_simplicial_complex(model: Model) -> SimplicialComplex{
             generate_random_hypergraph(num_vertices, prob_vec).upward_closure()
         },
         Model::Lower { num_vertices, prob_vec } => {
-            generate_random_hypergraph(num_vertices, prob_vec).downward_closure()
+            generate_random_hypergraph(num_vertices, prob_vec).par_downward_closure()
         },
         Model::Upper { num_vertices, prob_vec } => {
             generate_random_hypergraph(num_vertices, prob_vec).upward_closure()
