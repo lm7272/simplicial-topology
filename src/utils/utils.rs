@@ -1,6 +1,5 @@
 use std::collections::HashSet;
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
 
 use rand::{Rng, thread_rng};
 use itertools::Itertools;
@@ -40,25 +39,24 @@ pub fn filter_maximal_sets(mut s: Vec<Vec<usize>>) -> Vec<Vec<usize>> {
 /// 
 /// The final step keeps only the maximal remaining vectors, for memory succinctness.
 /// 
-/// TODO: benchmark non parallel code to check this is better
 pub fn par_filter_downward_closed_sets(mut s: Vec<Vec<usize>>) -> Vec<Vec<usize>> {
     for v in s.iter_mut(){
         v.sort();
     }
     let mut subsets_by_length: HashMap<usize, Vec<Vec<usize>>> = s
-    .into_iter()
-    .group_by(|subset| subset.len())
-    .into_iter()
-    .fold(HashMap::new(), |mut acc, (key, group)| {
-        let vecs = group.collect();
-        acc.insert(key, vecs);
-        acc
-    });
+                                        .into_iter()
+                                        .group_by(|subset| subset.len())
+                                        .into_iter()
+                                        .fold(HashMap::new(), |mut acc, (key, group)| {
+                                            let vecs = group.collect();
+                                            acc.insert(key, vecs);
+                                            acc
+                                        });
     let mut result: Vec<Vec<usize>> = vec![vec![]];
     for i in 1..(subsets_by_length.len()+1){
         let subsets = subsets_by_length.get_mut(&i).unwrap();
         let mut filtered_subsets: Vec<Vec<usize>> = subsets.par_iter()
-                                                            .filter(|face| subvectors(*face, i-1).iter().all(|vec| result.contains(vec)))
+                                                            .filter(|face| get_subvectors(*face, i-1).iter().all(|vec| result.contains(vec)))
                                                             .cloned()
                                                             .collect();
         result.append(&mut filtered_subsets);
@@ -99,7 +97,7 @@ pub fn randomly_select_items_from_vec<T: Clone>(v: &Vec<T>, p: f64) -> Vec<T> {
 }
 
 /// Consume a vector and return a vector containing all subvectors of length k, preserving ordering
-pub fn subvectors(v: &Vec<usize>, k: usize) -> Vec<Vec<usize>> {
+pub fn get_subvectors(v: &Vec<usize>, k: usize) -> Vec<Vec<usize>> {
     v.into_iter().combinations(k)
     .map(|subvec| subvec.into_iter().cloned().collect())
     .collect()

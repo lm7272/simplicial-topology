@@ -1,7 +1,6 @@
 #[cfg(test)]
 
 use itertools::Itertools;
-use nalgebra::DMatrix;
 
 use crate::simplicial_complex::simplex::{Simplex, Facet};
 use crate::simplicial_complex::simplicial_complex::SimplicialComplex;

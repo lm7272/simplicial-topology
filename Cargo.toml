@@ -18,3 +18,7 @@ criterion = {version = "0.4.0", features = ["html_reports"]}
 name="simplicial_complex_benchmark"
 harness=false
 
+[[bench]]
+name="random_complex_benchmark"
+harness=false
+

@@ -1,7 +1,7 @@
-use crate::utils::utils::{randomly_select_items_from_vec, subvectors};
+use rayon::prelude::*;
 
+use crate::utils::utils::{randomly_select_items_from_vec, get_subvectors};
 use crate::simplicial_complex::hypergraph::Hypergraph;
-
 use super::simplicial_complex::SimplicialComplex;
 
 pub enum Model {
@@ -16,7 +16,7 @@ pub fn generate_random_hypergraph(num_vertices: usize, prob_vec: Vec<f64>) -> Hy
     let vertices: Vec<usize> = randomly_select_items_from_vec(&possible_vertices, prob_vec[0]);
     let mut hyperedges: Vec<Vec<usize>> = Vec::new();
     for k in 1..prob_vec.len(){
-        let k_hyperedges: Vec<Vec<usize>> = subvectors(&possible_vertices, k+1);
+        let k_hyperedges: Vec<Vec<usize>> = get_subvectors(&possible_vertices, k+1);
         hyperedges.extend(randomly_select_items_from_vec(&k_hyperedges, prob_vec[k]));
     }
     Hypergraph {
@@ -24,6 +24,25 @@ pub fn generate_random_hypergraph(num_vertices: usize, prob_vec: Vec<f64>) -> Hy
         hyperedges
     }
 }
+
+pub fn par_generate_random_hypergraph(num_vertices: usize, prob_vec: Vec<f64>) -> Hypergraph{
+    let possible_vertices: Vec<usize> = (0..num_vertices).collect();
+    let vertices: Vec<usize> = randomly_select_items_from_vec(&possible_vertices, prob_vec[0]);
+    let hyperedges: Vec<Vec<usize>> = (1..prob_vec.len()).collect::<Vec<usize>>().par_iter().map(
+        |k| {
+                        let k_hyperedges: Vec<Vec<usize>> = get_subvectors(&possible_vertices, k+1);
+                        randomly_select_items_from_vec(&k_hyperedges, prob_vec[*k])
+                }
+            ).collect::<Vec<Vec<Vec<usize>>>>()
+            .into_iter()
+            .flat_map(|inner_vec| inner_vec.into_iter())
+            .collect();
+    Hypergraph {
+        vertices,
+        hyperedges
+    }
+}
+
 pub fn generate_random_simplicial_complex(model: Model) -> SimplicialComplex{
 
     let sc = match model {
