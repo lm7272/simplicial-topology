@@ -13,8 +13,17 @@ pub fn alternating_sum(v: &Vec<i32>) -> i32{
     running_sum
 }
 
-/// Given a vector of vectors, keep only those vectors that are maximal with respect to subsets.
-/// i.e, if s = [[1], [1,2], [1,2,3], [4,5]] the output would be [[1,2,3], [4,5]]
+fn _subsets_by_length(s: Vec<Vec<usize>>) -> HashMap<usize, Vec<Vec<usize>>>{
+    s.into_iter()
+    .group_by(|subset| subset.len())
+    .into_iter()
+    .fold(HashMap::new(), |mut acc, (key, group)| {
+        let vecs = group.collect();
+        acc.insert(key, vecs);
+        acc
+    })
+}
+
 pub fn filter_maximal_sets(mut s: Vec<Vec<usize>>) -> Vec<Vec<usize>> {
     s.sort_by_key(|x| x.len());
     let mut subsets: Vec<HashSet<usize>> = s.into_iter().map(HashSet::from_iter).collect();
@@ -30,6 +39,30 @@ pub fn filter_maximal_sets(mut s: Vec<Vec<usize>>) -> Vec<Vec<usize>> {
     result.into_iter().map(|set| set.into_iter().collect()).collect()
 }
 
+/// Given a vector of vectors, keep only those vectors that are maximal with respect to subsets.
+/// i.e, if s = [[1], [1,2], [1,2,3], [4,5]] the output would be [[1,2,3], [4,5]]
+pub fn par_filter_maximal_sets(s: Vec<Vec<usize>>) -> Vec<Vec<usize>> {
+    let mut subvecs_by_length = _subsets_by_length(s);
+    let n = subvecs_by_length.keys().max().unwrap().clone();
+    let mut result: Vec<Vec<usize>> = subvecs_by_length.remove(&n).unwrap();
+    for i in (1..n).rev(){
+        match subvecs_by_length.get_mut(&i) {
+            Some(subvecs) => {
+                let mut filtered_subsets: Vec<Vec<usize>> = subvecs.par_iter()
+                                                            .filter(|w| result.iter().any(|v| !is_subvector(v, *w, w.len())))
+                                                            .cloned()
+                                                            .collect();
+                result.append(&mut filtered_subsets);
+            },
+            None => {
+                continue
+            }
+        }
+        
+    }
+    result
+}
+
 /// Given a vector of vectors return only those that are downward closed with respect to subsets.
 /// i.e, if s = [[1], [1,2], [1,2,3], [4,5]] the output would be [[1,2,3]]
 /// 
@@ -43,17 +76,10 @@ pub fn par_filter_downward_closed_sets(mut s: Vec<Vec<usize>>) -> Vec<Vec<usize>
     for v in s.iter_mut(){
         v.sort();
     }
-    let mut subsets_by_length: HashMap<usize, Vec<Vec<usize>>> = s
-                                        .into_iter()
-                                        .group_by(|subset| subset.len())
-                                        .into_iter()
-                                        .fold(HashMap::new(), |mut acc, (key, group)| {
-                                            let vecs = group.collect();
-                                            acc.insert(key, vecs);
-                                            acc
-                                        });
-    let mut result: Vec<Vec<usize>> = vec![vec![]];
-    for i in 1..(subsets_by_length.len()+1){
+    let mut subsets_by_length: HashMap<usize, Vec<Vec<usize>>> = _subsets_by_length(s);
+    let mut result: Vec<Vec<usize>> = subsets_by_length.remove(&1).unwrap();
+    let n = subsets_by_length.keys().max().unwrap().clone();
+    for i in 2..=n{
         let subsets = subsets_by_length.get_mut(&i).unwrap();
         let mut filtered_subsets: Vec<Vec<usize>> = subsets.par_iter()
                                                             .filter(|face| get_subvectors(*face, i-1).iter().all(|vec| result.contains(vec)))
@@ -101,4 +127,12 @@ pub fn get_subvectors(v: &Vec<usize>, k: usize) -> Vec<Vec<usize>> {
     v.into_iter().combinations(k)
     .map(|subvec| subvec.into_iter().cloned().collect())
     .collect()
+}
+
+fn is_subvector(v: &Vec<usize>, w: &Vec<usize>, k: usize) -> bool{
+    if v.len() <= w.len(){
+        return false
+    }
+    let v_subvecs = get_subvectors(v, k);
+    v_subvecs.contains(w)
 }
