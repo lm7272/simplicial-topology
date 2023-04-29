@@ -66,9 +66,11 @@ assert_eq!(sc.contains_full_k_skeleton(3), true); // This is by definition true 
 ```
 The available model types are:
 ```rust
-Lower {num_vertices: usize, prob_vec: Vec<f64>},
-Upper {num_vertices: usize, prob_vec: Vec<f64>},
-LinialMeshulam {num_vertices: usize, dimension: usize, prob: f64},
-Pure {num_vertices: usize, dimension: usize, prob: f64, include_all_vertices: bool}
+pub enum Model {
+    Lower {num_vertices: usize, prob_vec: Vec<f64>},
+    Upper {num_vertices: usize, prob_vec: Vec<f64>},
+    LinialMeshulam {num_vertices: usize, dimension: usize, prob: f64},
+    Pure {num_vertices: usize, dimension: usize, prob: f64, include_all_vertices: bool}
+}
 ```
 They are all derived from constructing a random hypergraph (random collection of vectors from a given vertex set) and then applying upward or downward closure.
