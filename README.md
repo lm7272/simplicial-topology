@@ -35,6 +35,7 @@ println!("The complex has dimension {}", sc.dimension()); // This will output "T
 ### Betti Numbers
 ```rust
 use simplicial_topology::sc;
+
 let mut sc = sc![vec![1,2], vec![2,3], vec![1,3], vec![1,4], vec![4,5], vec![1,5]]; // This is the wedge of two simplicial circles (bdy of [1,2,3] and bdy of [1,4,5])
 sc.add_simplex(simplex![1,4,5]); // Here we add in the simplex [1,4,5] filling in a circle. If the boundary of this simplex didn't exist then add_simplex would panic
 println!("Betti vector: {:?}", sc.betti_numbers()); // This will output "Betti vector: [1, 1, 0]"
@@ -43,13 +44,16 @@ println!("Euler characteristic: {}", sc.euler_characteristic()); // This will ou
 Note that we could construct `sc` above slightly more neatly:
 ```rust
 use simplicial_topology::{simplex, SimplcialComplex};
+
 let sigma: Facet = simplex![1,2,3];
 let mut bdy1 = sigma.boundary();
 let tau: Facet = simplex![1,4,5];
 let mut bdy2 = tau.boundary();
 bdy1.append(&mut bdy2);
-let sc2 = SimplicialComplex::new(bdy1); // SimplicialComplex::new takes a vector of Facets as its argument
+
+let sc = SimplicialComplex::new(bdy1); // SimplicialComplex::new takes a vector of Facets as its argument
 ```
+The above is especially helpful when we want to interact with large simplicial spheres.
 
 ### Random Complexes
 ```rust
