@@ -20,11 +20,9 @@ fn main() {
     // println!("This simplicial complex has Euler characteristic: {}", sc.euler_characteristic());
     let mut sc = sc![vec![1,2], vec![2,3], vec![1,3], vec![1,4], vec![4,5], vec![1,5]];
     let sigma: Facet = simplex![1,2,3];
-    let mut bdy1 = sigma.boundary();
     let tau: Facet = simplex![1,4,5];
-    let mut bdy2 = tau.boundary();
-    bdy1.append(&mut bdy2);
-    let sc2 = SimplicialComplex::new(bdy1);
+    let sc2 = sigma.boundary_as_complex().union(tau.boundary_as_complex());
+    //let sc2 = SimplicialComplex::new(bdy1);
     assert_eq!(sc, sc2);
     sc.add_simplex(simplex![1,4,5]);
     println!("Betti vector is: {:?}", sc.betti_numbers());

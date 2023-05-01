@@ -1,10 +1,13 @@
 use std::{hash::{Hash, Hasher}, collections::HashSet};
 use itertools::Itertools;
+
+use super::simplicial_complex::SimplicialComplex;
 pub trait Simplex {
     type Boundary: Sized;
     fn new(vertices: Vec<usize>) -> Self;
     fn dimension(&self) -> isize;
     fn boundary(&self) -> Self::Boundary;
+    fn boundary_as_complex(&self) -> SimplicialComplex;
     fn sort(self) -> Self;
     fn has_subface(&self, simplex: &Facet) -> bool;
     fn link(self, simplex: &Facet) -> Self;
@@ -72,6 +75,10 @@ impl Simplex for Facet{
             result.push(Facet::new(vertices));
         }
         result
+    }
+
+    fn boundary_as_complex(&self) -> SimplicialComplex {
+        SimplicialComplex::new(self.boundary())
     }
 
     fn has_subface(&self, simplex: &Facet) -> bool {

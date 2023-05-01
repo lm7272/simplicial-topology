@@ -46,12 +46,8 @@ Note that we could construct `sc` above slightly more neatly:
 use simplicial_topology::{simplex, SimplcialComplex};
 
 let sigma: Facet = simplex![1,2,3];
-let mut bdy1 = sigma.boundary();
 let tau: Facet = simplex![1,4,5];
-let mut bdy2 = tau.boundary();
-bdy1.append(&mut bdy2);
-
-let sc = SimplicialComplex::new(bdy1); // SimplicialComplex::new takes a vector of Facets as its argument
+let sc2 = sigma.boundary_as_complex().union(tau.boundary_as_complex()); // boundary_as_complex() returns the boundary of the simplex but as a SimplicialComplex, rather than Vec<Facet>
 ```
 The above is especially helpful when we want to interact with large simplicial spheres.
 

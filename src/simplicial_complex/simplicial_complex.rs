@@ -44,6 +44,7 @@ impl SimplicialComplex {
         Self { facets: facets.into_iter().map(|facet| facet.sort()).collect() }
     }
 
+
     pub fn add_simplex(&mut self, simplex: Facet){
         let bdy = Self { facets: simplex.boundary() };
         if self.has_subcomplex(&bdy) &
@@ -55,6 +56,11 @@ impl SimplicialComplex {
         else {
             panic!("The boundary of {:?} is not contained in the simplicial complex.", simplex.vertices);
         }
+    }
+
+    pub fn union(mut self, mut sc: Self) -> Self{
+        self.facets.append(&mut sc.facets);
+        return Self::new(self.facets)
     }
 
     pub fn print(&self) {
