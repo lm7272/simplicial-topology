@@ -34,6 +34,7 @@ impl Clone for SimplicialComplex{
     }
 }
 
+/// Memory efficient representation of simplicial complexes as a collection of facets of various dimensions.
 impl SimplicialComplex {
     pub fn new(facets: Vec<Facet>) -> Self {
         Self::new_from_vec(facets.into_iter().map(|facet: Facet| facet.vertices).collect())
@@ -74,9 +75,18 @@ impl SimplicialComplex {
     pub fn dimension(&self) -> isize{
         self.facets.iter().map(|v| v.dimension()).max().unwrap()
     }
+    
+    pub fn is_pure(&self) -> bool {
+        if self.dimension() < 0{
+            return true
+        }
+        self.facets.iter().all(|facet| facet.dimension() == self.dimension())
+    }
+
     pub fn k_skeleton(self, dim: usize) -> Self{
         Self::new((0..(dim+1)).flat_map(|k| self.k_faces(k)).collect())
     }
+
     pub fn k_faces(&self, dim: usize) -> Vec<Facet>{
         if self.dimension() < 0 {
             return Vec::new()
@@ -158,6 +168,25 @@ impl SimplicialComplex {
         self.kth_betti_number(0) == 1
     }
 
+    /// A simplicial complexes is minimally (path) connected if it is connected and the removal
+    /// of any facet is disconnected (where we keep the same vertex set)
+    pub fn is_minimal_connected(&self) -> bool {
+        if !self.is_connected() {
+            return false
+        }
+        
+        let vertices = self.k_faces(0);
+        for (i,_) in self.facets.iter().enumerate(){
+            let mut pruned_facets = _remove_facet(&mut self.facets.clone(), i);
+            pruned_facets.append(&mut vertices.clone());
+            let pruned_complex = Self {facets: pruned_facets };
+            if pruned_complex.is_connected(){
+                return false
+            }
+        }
+        true
+    }
+
     pub fn kth_betti_number(&self, dim: usize) -> i32 {
         if dim == 0 {
             return row_nullity_smith_normal_matrix(&self.compute_reduced_k_boundary_matrix(1))
@@ -180,4 +209,9 @@ impl SimplicialComplex {
         betti_numbers
 
     }
+}
+
+fn _remove_facet(facets: &mut Vec<Facet>, index: usize) -> Vec<Facet>{
+    facets.remove(index);
+    facets.clone()
 }

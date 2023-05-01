@@ -43,7 +43,7 @@ println!("Euler characteristic: {}", sc.euler_characteristic()); // This will ou
 ```
 Note that we could construct `sc` above slightly more neatly:
 ```rust
-use simplicial_topology::{simplex, SimplcialComplex};
+use simplicial_topology::simplex;
 
 let sigma: Facet = simplex![1,2,3];
 let tau: Facet = simplex![1,4,5];
