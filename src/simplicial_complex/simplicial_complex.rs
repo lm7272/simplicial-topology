@@ -4,7 +4,7 @@ use std::collections::HashSet;
 use num_integer::binomial;
 use rayon::prelude::*;
 
-use crate::utils::utils::{alternating_sum, filter_maximal_sets};
+use crate::utils::utils::{alternating_sum, filter_maximal_sets, remove_element};
 use crate::utils::linear_algebra::{rank_smith_normal_matrix, row_nullity_smith_normal_matrix, gaussian_elimination};
 use crate::simplicial_complex::simplex::{Simplex, Facet};
 
@@ -177,7 +177,7 @@ impl SimplicialComplex {
         
         let vertices = self.k_faces(0);
         for (i,_) in self.facets.iter().enumerate(){
-            let mut pruned_facets = _remove_facet(&mut self.facets.clone(), i);
+            let mut pruned_facets = remove_element(&mut self.facets.clone(), i);
             pruned_facets.append(&mut vertices.clone());
             let pruned_complex = Self {facets: pruned_facets };
             if pruned_complex.is_connected(){
@@ -187,6 +187,11 @@ impl SimplicialComplex {
         true
     }
 
+    /// Computes the kth betti number of the complex by computing the k and (k+1) dimensional
+    /// boundary matrices B_k and B_{k+1}. Then reduces these matrices by Gaussian elimination to the
+    /// Smith normal form, SB_k, SB_{k+1}.
+    /// 
+    /// b_k = row_null(SB_{k+1}) - rank(SB_k)
     pub fn kth_betti_number(&self, dim: usize) -> i32 {
         if dim == 0 {
             return row_nullity_smith_normal_matrix(&self.compute_reduced_k_boundary_matrix(1))
@@ -209,9 +214,4 @@ impl SimplicialComplex {
         betti_numbers
 
     }
-}
-
-fn _remove_facet(facets: &mut Vec<Facet>, index: usize) -> Vec<Facet>{
-    facets.remove(index);
-    facets.clone()
 }

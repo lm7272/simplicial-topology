@@ -137,3 +137,7 @@ fn is_subvector(v: &Vec<usize>, w: &Vec<usize>, k: usize) -> bool{
     v_subvecs.contains(w)
 }
 
+pub fn remove_element<T: Clone>(vec: &mut Vec<T>, index: usize) -> Vec<T>{
+    vec.remove(index);
+    vec.clone()
+}

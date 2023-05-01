@@ -23,7 +23,7 @@ simplicial_topology = { git = "https://github.com/lm7272/simplicial-topology.git
 
 ### Basic Usage
 ```rust
-use simplicial_topology::{SimplicialComplex, sc};
+use simplicial_topology::{sc, simplicial_complex::SimplicialComplex};
 
 let sc = SimplicialComplex::new_from_vec(vec![vec![0, 1], vec![1, 2], vec![1, 2, 3], vec![3, 4], vec![1, 3, 4]]);
 let _sc = sc![vec![0, 1], vec![1, 2], vec![1, 2, 3], vec![3, 4], vec![1, 3, 4]]; // Note this is the shorthand macro to construct an identical SimplicialComplex to sc
@@ -43,11 +43,11 @@ println!("Euler characteristic: {}", sc.euler_characteristic()); // This will ou
 ```
 Note that we could construct `sc` above slightly more neatly:
 ```rust
-use simplicial_topology::simplex;
+use simplicial_topology::{simplex, simplicial_complex::SimplicialComplex};
 
 let sigma: Facet = simplex![1,2,3];
 let tau: Facet = simplex![1,4,5];
-let sc2 = sigma.boundary_as_complex().union(tau.boundary_as_complex()); // boundary_as_complex() returns the boundary of the simplex but as a SimplicialComplex, rather than Vec<Facet>
+let sc: SimplicialComplex = sigma.boundary_as_complex().union(tau.boundary_as_complex()); // boundary_as_complex() returns the boundary of the simplex but as a SimplicialComplex, rather than Vec<Facet>
 ```
 The above is especially helpful when we want to interact with large simplicial spheres.
 
