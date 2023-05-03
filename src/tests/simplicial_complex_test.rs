@@ -1,7 +1,4 @@
-#[cfg(test)]
-
 use itertools::Itertools;
-
 use crate::{sc, simplex};
 use crate::simplicial_complex::simplex::{Simplex, Facet};
 use crate::simplicial_complex::simplicial_complex::SimplicialComplex;

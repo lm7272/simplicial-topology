@@ -27,6 +27,6 @@ fn main() {
     sc.add_simplex(simplex![1,4,5]);
     sc.add_simplex(simplex![1,2,3]);
     println!("Betti vector is: {:?}", sc.betti_numbers());
-    println!("Simplicial complex is minimal cover: {:?}", sc2.is_minimal_connected());
+    println!("Simplicial complex is minimal cover: {:?}", sc.is_minimal_connected());
     println!("This simplicial complex has Euler characteristic: {}", sc.euler_characteristic());
 }

@@ -174,8 +174,7 @@ impl SimplicialComplex {
         if !self.is_connected() {
             return false
         }
-        
-        let vertices = self.k_faces(0);
+        let vertices = &self.k_faces(0);
         for (i,_) in self.facets.iter().enumerate(){
             let mut pruned_facets = remove_element(&mut self.facets.clone(), i);
             pruned_facets.append(&mut vertices.clone());
@@ -186,6 +185,20 @@ impl SimplicialComplex {
         }
         true
     }
+
+    pub fn is_minimal_connected_par(&self) -> bool {
+        if !self.is_connected() {
+            return false
+        }
+        let vertices = &self.k_faces(0);
+        !self.facets.par_iter().enumerate().any(|(i, _)| {
+            let mut pruned_facets = remove_element(&mut self.facets.clone(), i);
+            pruned_facets.append(&mut vertices.clone());
+            let pruned_complex = Self {facets: pruned_facets };
+            pruned_complex.is_connected()
+        })
+    }
+    
 
     /// Computes the kth betti number of the complex by computing the k and (k+1) dimensional
     /// boundary matrices B_k and B_{k+1}. Then reduces these matrices by Gaussian elimination to the

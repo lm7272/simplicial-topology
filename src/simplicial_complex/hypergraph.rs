@@ -1,6 +1,5 @@
 use crate::simplicial_complex::simplicial_complex::SimplicialComplex;
 use crate::utils::utils::{filter_maximal_sets, par_filter_downward_closed_sets, filter_downward_closed_sets};
-use crate::sc;
 
 pub struct Hypergraph {
     pub vertices: Vec<usize>,
