@@ -8,6 +8,8 @@ use crate::utils::utils::{alternating_sum, filter_maximal_sets, remove_element};
 use crate::utils::linear_algebra::{rank_smith_normal_matrix, row_nullity_smith_normal_matrix, gaussian_elimination};
 use crate::simplicial_complex::simplex::{Simplex, Facet};
 
+use super::simplex::simplex_intersection;
+
 #[derive(Debug)]
 pub struct SimplicialComplex {
     facets: Vec<Facet>,
@@ -63,6 +65,18 @@ impl SimplicialComplex {
         self.facets.append(&mut sc.facets);
         return Self::new(self.facets)
     }
+
+    pub fn intersection(self, sc: Self) -> Self{
+        let mut facets: Vec<Facet> = Vec::new();
+        for f in &self.facets{
+            for g in &sc.facets{
+                facets.push(simplex_intersection(f, g));
+            }
+        }
+        Self::new(facets)
+    }
+
+    // TODO: join
 
     pub fn print(&self) {
         println!("Simplicial Complex has dimension {}. The facets are:", self.dimension());
@@ -163,7 +177,8 @@ impl SimplicialComplex {
         let num_faces = self.k_faces(dim).len();
         num_faces == binomial(self.k_faces(0).len(), dim +1)
     }
-
+    
+    /// TODO: is there a more efficient method?
     pub fn is_connected(&self) -> bool{
         self.kth_betti_number(0) == 1
     }
@@ -203,7 +218,6 @@ impl SimplicialComplex {
     /// Computes the kth betti number of the complex by computing the k and (k+1) dimensional
     /// boundary matrices B_k and B_{k+1}. Then reduces these matrices by Gaussian elimination to the
     /// Smith normal form, SB_k, SB_{k+1}.
-    /// 
     /// b_k = row_null(SB_{k+1}) - rank(SB_k)
     pub fn kth_betti_number(&self, dim: usize) -> i32 {
         if dim == 0 {

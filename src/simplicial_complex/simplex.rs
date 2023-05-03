@@ -45,6 +45,23 @@ impl Clone for Facet {
     }
 }
 
+pub fn simplex_join(sigma: &Facet, tau: &Facet) -> Facet{
+    let mut v = sigma.vertices.clone();
+    let mut w = tau.vertices.clone();
+    if v.iter().any(|vertex| w.contains(vertex)){
+        panic!("Expected disjoint simplices to join.")
+    }
+    v.append(&mut w);
+    Simplex::new(v)
+}
+
+pub fn simplex_intersection(sigma: &Facet, tau: &Facet) -> Facet{
+    let mut v = sigma.vertices.clone();
+    let w = tau.vertices.clone();
+    v.retain(|&vertex| w.contains(&vertex));
+    Simplex::new(v)
+}
+
 impl Simplex for Facet{
     type Boundary = Vec<Self>;
 

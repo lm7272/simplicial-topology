@@ -1,8 +1,6 @@
 use simplicial_topology::{sc, simplex};
 use simplicial_topology::simplicial_complex::simplex::{Simplex, Facet};
 use simplicial_topology::simplicial_complex::simplicial_complex::SimplicialComplex;
-use simplicial_topology::simplicial_complex::hypergraph::{Hypergraph};
-use simplicial_topology::simplicial_complex::random_simplicial_complex::{generate_random_hypergraph, generate_random_simplicial_complex, Model};
 
 fn main() {
     std::env::set_var("RUST_BACKTRACE", "1");
