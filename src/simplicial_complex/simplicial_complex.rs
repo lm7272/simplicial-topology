@@ -8,7 +8,7 @@ use crate::utils::utils::{alternating_sum, filter_maximal_sets, remove_element};
 use crate::utils::linear_algebra::{rank_smith_normal_matrix, row_nullity_smith_normal_matrix, gaussian_elimination};
 use crate::simplicial_complex::simplex::{Simplex, Facet};
 
-use super::simplex::simplex_intersection;
+use super::simplex::{simplex_intersection, simplex_join};
 
 #[derive(Debug)]
 pub struct SimplicialComplex {
@@ -47,11 +47,10 @@ impl SimplicialComplex {
         Self { facets: facets.into_iter().map(|facet| facet.sort()).collect() }
     }
 
-
+    /// Add simplex to complex. Panics if the boundary of this complex is not present.
     pub fn add_simplex(&mut self, simplex: Facet){
         let bdy = Self { facets: simplex.boundary() };
-        if self.has_subcomplex(&bdy) &
-            (!self.has_subcomplex(&Self { facets: vec![simplex.clone()]}))
+        if self.has_subcomplex(&bdy)
         {
             self.facets.retain(|facet| !bdy.facets.contains(facet));
             self.facets.push(simplex);
@@ -61,11 +60,14 @@ impl SimplicialComplex {
         }
     }
 
-    pub fn union(mut self, mut sc: Self) -> Self{
-        self.facets.append(&mut sc.facets);
-        return Self::new(self.facets)
+    /// Union of two complexes, returns a new complex
+    pub fn union(&self, mut sc: Self) -> Self{
+        let mut facets = self.facets.clone();
+        facets.append(&mut sc.facets);
+        return Self::new(facets)
     }
 
+    /// Intersection of two complexes, returns a new complex
     pub fn intersection(self, sc: Self) -> Self{
         let mut facets: Vec<Facet> = Vec::new();
         for f in &self.facets{
@@ -76,7 +78,27 @@ impl SimplicialComplex {
         Self::new(facets)
     }
 
-    // TODO: join
+    pub fn join(self, sigma: Facet, tau: Facet) -> Self{
+        if simplex_intersection(&sigma, &tau).dimension() >= 0{
+            panic!("Sigma and tau should be disjoint.")
+        }
+        let mut facets: Vec<Facet> = Vec::new();
+        let mut sigma_count = 0;
+        for facet in self.facets{
+            if facet.has_subface(&sigma){
+                let f = simplex_join(&sigma, &tau);
+                facets.push(f);
+                sigma_count += 1;
+            }
+            else{
+                facets.push(facet);
+            }
+        }
+        if sigma_count == 0{
+            panic!("Sigma is not contained in the simplicial complex, join doesn't make sense.")
+        }
+        Self{facets}
+    }
 
     pub fn print(&self) {
         println!("Simplicial Complex has dimension {}. The facets are:", self.dimension());
@@ -87,12 +109,15 @@ impl SimplicialComplex {
 
 
     pub fn dimension(&self) -> isize{
+        if self.facets.is_empty(){
+            return -1
+        }
         self.facets.iter().map(|v| v.dimension()).max().unwrap()
     }
     
     pub fn is_pure(&self) -> bool {
         if self.dimension() < 0{
-            return true
+            return false
         }
         self.facets.iter().all(|facet| facet.dimension() == self.dimension())
     }

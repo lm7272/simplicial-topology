@@ -51,3 +51,9 @@ fn test_add_simplex(){
     sc.add_simplex(simplex);
     assert_eq!(sc, sc2);
 }
+
+#[test]
+fn test_empty_complex(){
+    let sc = SimplicialComplex::new_from_vec(vec![]);
+    assert_eq!(sc.dimension(), -1);
+}
