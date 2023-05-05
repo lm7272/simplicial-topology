@@ -82,7 +82,7 @@ impl Simplex for Facet{
 
     fn boundary(&self) -> Vec<Self> {
         let n: isize = self.dimension() + 1;
-        let mut result = Vec::with_capacity(n.try_into().unwrap());
+        let mut result: Vec<Facet> = Vec::new();
         for i in 0..n {
             // create a new simplex with one less vertex
             let vertices = self.vertices.iter().enumerate()

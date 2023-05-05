@@ -187,6 +187,9 @@ impl SimplicialComplex {
     }
 
     pub fn has_subcomplex(&self, sc: &SimplicialComplex) -> bool{
+        if sc.dimension() == -1 {
+            return true
+        }
         for f in &sc.facets{
             if !self.facets.iter().any(|x| x.has_subface(f)){
                 return false
