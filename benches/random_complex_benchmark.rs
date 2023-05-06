@@ -7,7 +7,7 @@ fn criterion_par_random_hypergraph_benchmark(c: &mut Criterion) {
 }
 
 fn criterion_random_hypergraph_benchmark(c: &mut Criterion) {
-    c.bench_function("random hg", |b| b.iter(|| generate_random_hypergraph(30, vec![0.8,0.5,0.7,0.4])));
+    c.bench_function("random hg", |b| b.iter(|| generate_random_hypergraph(&30, &vec![0.8,0.5,0.7,0.4])));
 }
 
 

@@ -11,7 +11,7 @@ pub enum Model {
     Pure {num_vertices: usize, dimension: usize, prob: f64, include_all_vertices: bool}
 }
 
-pub fn generate_random_hypergraph(num_vertices: usize, prob_vec: Vec<f64>) -> Hypergraph{
+pub fn generate_random_hypergraph(&num_vertices: &usize, prob_vec: &Vec<f64>) -> Hypergraph{
     let possible_vertices: Vec<usize> = (0..num_vertices).collect();
     let vertices: Vec<usize> = randomly_select_items_from_vec(&possible_vertices, prob_vec[0]);
     let mut hyperedges: Vec<Vec<usize>> = Vec::new();
@@ -43,13 +43,13 @@ pub fn par_generate_random_hypergraph(num_vertices: usize, prob_vec: Vec<f64>) -
     }
 }
 
-pub fn generate_random_simplicial_complex(model: Model) -> SimplicialComplex{
+pub fn generate_random_simplicial_complex(model: &Model) -> SimplicialComplex{
     let sc = match model {
         Model::LinialMeshulam { num_vertices, dimension, prob } => {
             let mut prob_vec: Vec<f64> = vec![0; dimension - 1].into_iter().map(|x| x as f64).collect::<Vec<f64>>();
             prob_vec.push(1.0);
-            prob_vec.push(prob);
-            generate_random_hypergraph(num_vertices, prob_vec).upward_closure()
+            prob_vec.push(prob.clone());
+            generate_random_hypergraph(num_vertices, &prob_vec).upward_closure()
         },
         Model::Lower { num_vertices, prob_vec } => {
             generate_random_hypergraph(num_vertices, prob_vec).par_downward_closure()
@@ -59,15 +59,15 @@ pub fn generate_random_simplicial_complex(model: Model) -> SimplicialComplex{
         },
         Model::Pure { num_vertices, dimension, prob, include_all_vertices } => {
             let mut prob_vec: Vec<f64> = Vec::new();
-            if include_all_vertices {
+            if *include_all_vertices {
                 prob_vec.push(1.0)
             }
             else {
                 prob_vec.push(0.0)
             }
             prob_vec.extend(vec![0.0; dimension - 1]);
-            prob_vec.push(prob);
-            generate_random_hypergraph(num_vertices, prob_vec).upward_closure()
+            prob_vec.push(prob.clone());
+            generate_random_hypergraph(num_vertices, &prob_vec).upward_closure()
         }
 
     };
