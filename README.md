@@ -60,7 +60,7 @@ let sc = generate_random_simplicial_complex(model);
 
 assert_eq!(sc.contains_full_k_skeleton(3), true); // This is by definition true for this Linial-Meshulam random complex
 ```
-The available model types are:
+The available model types are all derived from constructing a random hypergraph (random collection of vectors from a given vertex set) and then applying upward or downward closure.
 ```rust
 pub enum Model {
     Lower {num_vertices: usize, prob_vec: Vec<f64>},
@@ -69,19 +69,18 @@ pub enum Model {
     Pure {num_vertices: usize, dimension: usize, prob: f64, include_all_vertices: bool}
 }
 ```
-They are all derived from constructing a random hypergraph (random collection of vectors from a given vertex set) and then applying upward or downward closure.
 
 
 We can generate and plot the distribution of Betti numbers of a random simplicial complex. The below code returns an interactive plotly Histogram.
 ```rust
-use simplicial_topology::simplicial_complex::random_simplicial_complex::{collect_many_random_betti_numbers, Model};
+use simplicial_topology::simplicial_complex::random_simplicial_complex::{generate_many_random_betti_numbers, Model};
 use simplicial_topology::graphics::plot::betti_number_histogram;
 
 let n: usize = 20;
 let prob_vec: Vec<f64> = vec![1.0, 1.0/(n as f64).powf(0.5), 1.0];
 let model = Model::Lower {num_vertices: n, prob_vec: prob_vec };
 
-let betti_numbers: Vec<Vec<i32>> = collect_many_random_betti_numbers(1000, model);
+let betti_numbers: Vec<Vec<i32>> = generate_many_random_betti_numbers(1000, model);
 println!("{:?}", betti_numbers);
 let plot = betti_number_histogram(&betti_numbers);
 ```
