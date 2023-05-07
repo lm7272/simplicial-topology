@@ -1,5 +1,5 @@
 use rayon::prelude::{IntoParallelIterator, ParallelIterator};
-use simplicial_topology::simplicial_complex::random_simplicial_complex::{Model, generate_random_simplicial_complex};
+use simplicial_topology::simplicial_complex::random_simplicial_complex::{Model, generate_random_simplicial_complex, collect_many_random_betti_numbers};
 use simplicial_topology::{sc, simplex};
 use simplicial_topology::simplicial_complex::simplex::{Simplex, Facet};
 use simplicial_topology::simplicial_complex::simplicial_complex::SimplicialComplex;
@@ -32,9 +32,7 @@ fn main() {
     let n: usize = 20;
     let prob_vec: Vec<f64> = vec![1.0, 1.0/(n as f64).powf(0.5), 1.0];
     let model = Model::Lower {num_vertices: n, prob_vec: prob_vec };
-    let complexes: Vec<SimplicialComplex> = (0..1000).collect::<Vec<usize>>().into_par_iter().map(|_| generate_random_simplicial_complex(&model)).collect();
-    // println!("{:?}", complexes);
-    let betti_numbers: Vec<Vec<i32>> = complexes.into_par_iter().map(|sc| sc.betti_numbers()).collect();
+    let betti_numbers: Vec<Vec<i32>> = collect_many_random_betti_numbers(1000, model);
     println!("{:?}", betti_numbers);
     let plot = betti_number_histogram(&betti_numbers);
     plot.write_html("out.html");

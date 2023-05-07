@@ -71,4 +71,18 @@ pub enum Model {
 ```
 They are all derived from constructing a random hypergraph (random collection of vectors from a given vertex set) and then applying upward or downward closure.
 
-{% include out.html %}
+
+If the graphics library is included in the get you can generate and plot the betti numbers for a distribution of random complexes. The below code returns an interactive plotly Histogram of the betti numbers.
+```rust
+use simplicial_topology::simplicial_complex::random_simplicial_complex::{collect_many_random_betti_numbers, Model};
+use simplicial_topology::graphics::plot::betti_number_histogram;
+
+let n: usize = 20;
+let prob_vec: Vec<f64> = vec![1.0, 1.0/(n as f64).powf(0.5), 1.0];
+let model = Model::Lower {num_vertices: n, prob_vec: prob_vec };
+
+let betti_numbers: Vec<Vec<i32>> = collect_many_random_betti_numbers(1000, model);
+println!("{:?}", betti_numbers);
+let plot = betti_number_histogram(&betti_numbers);
+```
+![Plot](docs/betti_plot.png)
