@@ -86,7 +86,7 @@ impl Simplex for Facet{
         for i in 0..n {
             // create a new simplex with one less vertex
             let vertices = self.vertices.iter().enumerate()
-                .filter(|&(j, _)| j != i.try_into().unwrap())
+                .filter(|&(j, _)| j != <isize as TryInto<usize>>::try_into(i).unwrap())
                 .map(|(_, v)| *v)
                 .collect();
             result.push(Facet::new(vertices));

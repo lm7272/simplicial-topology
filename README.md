@@ -70,3 +70,5 @@ pub enum Model {
 }
 ```
 They are all derived from constructing a random hypergraph (random collection of vectors from a given vertex set) and then applying upward or downward closure.
+
+{% include out.html %}

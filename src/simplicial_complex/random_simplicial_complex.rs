@@ -73,3 +73,7 @@ pub fn generate_random_simplicial_complex(model: &Model) -> SimplicialComplex{
     };
     sc
 }
+
+pub fn generate_many_random_simplicial_complexes(num: usize, model: Model) -> Vec<SimplicialComplex>{
+    (0..num).collect::<Vec<usize>>().into_par_iter().map(|_| generate_random_simplicial_complex(&model)).collect()
+}
