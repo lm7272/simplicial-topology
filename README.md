@@ -72,7 +72,7 @@ pub enum Model {
 They are all derived from constructing a random hypergraph (random collection of vectors from a given vertex set) and then applying upward or downward closure.
 
 
-If the graphics library is included in the get you can generate and plot the betti numbers for a distribution of random complexes. The below code returns an interactive plotly Histogram of the betti numbers.
+We can generate and plot the distribution of Betti numbers of a random simplicial complex. The below code returns an interactive plotly Histogram.
 ```rust
 use simplicial_topology::simplicial_complex::random_simplicial_complex::{collect_many_random_betti_numbers, Model};
 use simplicial_topology::graphics::plot::betti_number_histogram;
