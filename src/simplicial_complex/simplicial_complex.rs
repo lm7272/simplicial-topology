@@ -100,6 +100,42 @@ impl SimplicialComplex {
         Self{facets}
     }
 
+    fn k_external_faces(self, dim: usize) -> Vec<Facet>{
+        let k_minus_one_simplices = self.k_faces(dim-1);
+        let k_simplices = self.k_faces(dim);
+        let vertices: Vec<usize> = self.k_faces(0).iter().map(|v| v.vertices[0]).collect();
+        let mut external_simplices = Self::new_from_vec(vec![vertices]).k_faces(dim);
+        external_simplices.retain(|sigma| !k_simplices.contains(sigma));
+        external_simplices.retain(|sigma| sigma.boundary().iter().all(|tau| k_minus_one_simplices.contains(tau)));
+        external_simplices
+    }
+
+    // fn external_faces(self) -> Vec<Facet>{
+
+    // }
+
+    /// Returns the combinatorial Alexander dual of the initial complex, where if \sigma is a simplex in X*
+    /// iff the simplex defined by n - \sigma is not a simplex.
+    /// 
+    /// This has the reduced homology relation:
+    /// H_i(X) \simeq H^{n-i-3}(X*),
+    /// where n is the number of vertices of X.
+    /// 
+    /// As described here: 
+    /// https://arxiv.org/pdf/0710.1172.pdf
+    pub fn combinatorial_alexander_dual(&self) -> Self{
+        let vertices: Vec<usize> = self.k_faces(0).iter().map(|v| v.vertices[0]).collect();
+        let mut dual_facets: Vec<Facet> = Vec::new();
+        
+        // TODO: FIX, currently only maps Maximal -> External but also needs to map External -> Maximal
+        for facet in &self.facets{
+            let mut dual_bdy = facet.dual(&vertices).boundary();
+            dual_bdy.retain(|sigma| !self.has_subcomplex(&Self::new(vec![sigma.dual(&vertices)])));
+            dual_facets.append(&mut dual_bdy);
+        }
+        Self::new(dual_facets)
+    }
+
     pub fn print(&self) {
         println!("Simplicial Complex has dimension {}. The facets are:", self.dimension());
         for facet in &self.facets {
@@ -123,6 +159,8 @@ impl SimplicialComplex {
     }
 
     pub fn k_skeleton(self, dim: usize) -> Self{
+        // TODO: Can be improved by only doing self.k_faces for maximal faces of dimension > dim
+        // and including all lower maximal faces
         Self::new((0..(dim+1)).flat_map(|k| self.k_faces(k)).collect())
     }
 

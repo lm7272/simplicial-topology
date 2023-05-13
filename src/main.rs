@@ -24,11 +24,14 @@ fn main() {
     let sc2: SimplicialComplex = sigma.boundary_as_complex().union(tau.boundary_as_complex());
     //let sc2 = SimplicialComplex::new(bdy1);
     assert_eq!(sc, sc2);
-    sc.add_simplex(simplex![1,4,5]);
     sc.add_simplex(simplex![1,2,3]);
+    sc.print();
     println!("Betti vector is: {:?}", sc.betti_numbers());
     println!("Simplicial complex is minimal cover: {:?}", sc.is_minimal_connected());
     println!("This simplicial complex has Euler characteristic: {}", sc.euler_characteristic());
+    let sc2 = sc.combinatorial_alexander_dual();
+    sc2.print();    
+    println!("Betti vector is: {:?}", sc2.betti_numbers());
     let n: usize = 20;
     let prob_vec: Vec<f64> = vec![1.0, 1.0/(n as f64).powf(0.5), 1.0];
     let model = Model::Lower {num_vertices: n, prob_vec: prob_vec };

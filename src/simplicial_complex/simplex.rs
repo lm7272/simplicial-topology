@@ -11,6 +11,7 @@ pub trait Simplex {
     fn sort(self) -> Self;
     fn has_subface(&self, simplex: &Facet) -> bool;
     fn link(self, simplex: &Facet) -> Self;
+    fn dual (&self, vertex_set: &Vec<usize>) -> Self;
     fn print(&self);
 }
 
@@ -106,6 +107,12 @@ impl Simplex for Facet{
 
     fn link(self, simplex: &Facet) -> Self {
         Self { vertices:  self.vertices.iter().filter(|&elem| !simplex.vertices.contains(elem)).cloned().collect()}
+    }
+
+    fn dual(&self, vertex_set: &Vec<usize>) -> Self{
+        let mut vertices: Vec<usize> = vertex_set.iter().filter(|v| !self.vertices.contains(v)).cloned().collect();
+        vertices.sort();
+        Self { vertices }
     }
 
     fn print(&self) {
