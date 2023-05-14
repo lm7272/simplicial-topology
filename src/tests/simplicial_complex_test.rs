@@ -57,7 +57,6 @@ fn test_empty_complex(){
     let mut sc = SimplicialComplex::new_from_vec(vec![]);
     assert_eq!(sc.dimension(), -1);
     let sigma: Facet = simplex!(1);
-    let tmp = sigma.boundary();
     sc.add_simplex(sigma);
     assert_eq!(sc, sc![vec![1]]);
 }

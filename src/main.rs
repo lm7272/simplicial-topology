@@ -1,5 +1,4 @@
-use rayon::prelude::{IntoParallelIterator, ParallelIterator};
-use simplicial_topology::simplicial_complex::random_simplicial_complex::{Model, generate_random_simplicial_complex, generate_many_random_betti_numbers};
+use simplicial_topology::simplicial_complex::random_simplicial_complex::{Model, generate_many_random_betti_numbers};
 use simplicial_topology::{sc, simplex};
 use simplicial_topology::simplicial_complex::simplex::{Simplex, Facet};
 use simplicial_topology::simplicial_complex::simplicial_complex::SimplicialComplex;
