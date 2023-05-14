@@ -110,8 +110,7 @@ impl Simplex for Facet{
     }
 
     fn dual(&self, vertex_set: &Vec<usize>) -> Self{
-        let mut vertices: Vec<usize> = vertex_set.iter().filter(|v| !self.vertices.contains(v)).cloned().collect();
-        vertices.sort();
+        let vertices = vertex_set.iter().filter(|v| !self.vertices.contains(v)).cloned().collect();
         Self { vertices }
     }
 

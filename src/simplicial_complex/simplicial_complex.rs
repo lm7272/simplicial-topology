@@ -100,7 +100,7 @@ impl SimplicialComplex {
         Self{facets}
     }
 
-    fn k_external_faces(self, dim: usize) -> Vec<Facet>{
+    pub fn k_external_faces(&self, dim: usize) -> Vec<Facet>{
         let k_minus_one_simplices = self.k_faces(dim-1);
         let k_simplices = self.k_faces(dim);
         let vertices: Vec<usize> = self.k_faces(0).iter().map(|v| v.vertices[0]).collect();
@@ -110,9 +110,14 @@ impl SimplicialComplex {
         external_simplices
     }
 
-    // fn external_faces(self) -> Vec<Facet>{
+    fn external_faces(&self) -> Vec<Facet>{
+        if &self.dimension() < &1{
+            return Vec::new(); 
+        }
+        let dim: usize = self.dimension() as usize;
+        (1..(dim+2)).into_par_iter().map(|dim| self.k_external_faces(dim)).flatten().collect()
 
-    // }
+    }
 
     /// Returns the combinatorial Alexander dual of the initial complex, where if \sigma is a simplex in X*
     /// iff the simplex defined by n - \sigma is not a simplex.
@@ -127,11 +132,14 @@ impl SimplicialComplex {
         let vertices: Vec<usize> = self.k_faces(0).iter().map(|v| v.vertices[0]).collect();
         let mut dual_facets: Vec<Facet> = Vec::new();
         
-        // TODO: FIX, currently only maps Maximal -> External but also needs to map External -> Maximal
         for facet in &self.facets{
             let mut dual_bdy = facet.dual(&vertices).boundary();
-            dual_bdy.retain(|sigma| !self.has_subcomplex(&Self::new(vec![sigma.dual(&vertices)])));
+            // dual_bdy.retain(|sigma| !self.has_subcomplex(&Self::new(vec![sigma.dual(&vertices)])));
             dual_facets.append(&mut dual_bdy);
+        }
+        for e_facet in self.external_faces(){
+            let dual = e_facet.dual(&vertices);
+            dual_facets.push(dual);
         }
         Self::new(dual_facets)
     }

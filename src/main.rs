@@ -24,7 +24,9 @@ fn main() {
     let sc2: SimplicialComplex = sigma.boundary_as_complex().union(tau.boundary_as_complex());
     //let sc2 = SimplicialComplex::new(bdy1);
     assert_eq!(sc, sc2);
+    println!("External faces: {:?}", sc.k_external_faces(2));
     sc.add_simplex(simplex![1,2,3]);
+    sc.add_simplex(simplex![6]);
     sc.print();
     println!("Betti vector is: {:?}", sc.betti_numbers());
     println!("Simplicial complex is minimal cover: {:?}", sc.is_minimal_connected());
