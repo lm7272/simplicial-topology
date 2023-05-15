@@ -95,4 +95,13 @@ let sc1 = sc![vec![1,2,3]];
 let sc2 = simplex![2,3,4].boundary_as_complex();
 sc1.intersection(&sc2); // sc![vec![2,3]]);
 sc1.union(&sc2); // sc![vec![1,2,3], vec![3,4], vec![2,4]]
+sc1.link(&simplex![2]); // sc![vec![1,3]]
+sc2.star(&simplex![2]); // sc![vec![2,3], vec![2,4]]
+sc2.add_simplex(simplex![2,3,4]); // sc![vec![2,3,4]], will change sc2 in place
+sc1.add_simplex(simplex![2,3,4]); // panics as the boundary of this simplex is not in sc1
+sc1.k_skeleton(1); // sc![vec![1,2], vec![1,3], vec![2,3]]
+sc2.kth_betti_number(1);; // 1
+sc![vec![1,2,3], vec![4]].alexander_dual(); // sc![vec![1,2], vec![1,3], vec![2,3]] - the dual complex X* on [n] where \sigma is a face iff [n] - \sigma is not a face in X
+sc1.dimension(); // 2
+sc1.dimension(); //1
 ```

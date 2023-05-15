@@ -63,5 +63,5 @@ fn test_alexander_duality(){
     sc.add_simplex(simplex![6]);
     //sc.betti_numbers() = (2,1,0) reduced this becomes (1,1,0)
     //dual map b_i(X)->b_{3-i}(X*) gives (0,0,1,1) which unreduced is (1,0,1,1)
-    assert_eq!(sc.combinatorial_alexander_dual().betti_numbers(), vec![1,0,1,1])
+    assert_eq!(sc.alexander_dual().betti_numbers(), vec![1,0,1,1])
 }

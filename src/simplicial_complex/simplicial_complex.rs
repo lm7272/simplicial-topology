@@ -128,13 +128,12 @@ impl SimplicialComplex {
     /// 
     /// As described here: 
     /// https://arxiv.org/pdf/0710.1172.pdf
-    pub fn combinatorial_alexander_dual(&self) -> Self{
+    pub fn alexander_dual(&self) -> Self{
         let vertices: Vec<usize> = self.k_faces(0).iter().map(|v| v.vertices[0]).collect();
         let mut dual_facets: Vec<Facet> = Vec::new();
         
         for facet in &self.facets{
             let mut dual_bdy = facet.dual(&vertices).boundary();
-            // dual_bdy.retain(|sigma| !self.has_subcomplex(&Self::new(vec![sigma.dual(&vertices)])));
             dual_facets.append(&mut dual_bdy);
         }
         for e_facet in self.external_faces(){
