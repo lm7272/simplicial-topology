@@ -2,6 +2,9 @@
 name = "simplicial_topology"
 version = "0.1.0"
 edition = "2021"
+authors = ["Lewis Mead"]
+readme = "README.md"
+keywords = ["simplicial", "topology", "betti", "combinatorics"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -12,7 +15,10 @@ rand = "0.8.5"
 num-integer = "0.1.45"
 rayon = "1.7.0"
 criterion = {version = "0.4.0", features = ["html_reports"]}
-plotly = "0.8.3"
+plotly = {version = "0.8.3", optional = true}
+
+[features]
+sc_plot = ["dep:plotly"]
 
 [[bench]]
 name="simplicial_complex_benchmark"
@@ -21,4 +27,3 @@ harness=false
 [[bench]]
 name="random_complex_benchmark"
 harness=false
-
