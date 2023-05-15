@@ -49,8 +49,8 @@ impl SimplicialComplex {
 
     /// Add simplex to complex. Panics if the boundary of this complex is not present.
     pub fn add_simplex(&mut self, simplex: Facet){
-        let bdy = Self { facets: simplex.boundary() };
-        if self.has_subcomplex(&bdy)
+        let bdy = simplex.boundary_as_complex();
+        if self.contains(&bdy)
         {
             self.facets.retain(|facet| !bdy.facets.contains(facet));
             self.facets.push(simplex);
@@ -150,7 +150,7 @@ impl SimplicialComplex {
         }
     }
 
-
+    /// The dimension of the complex
     pub fn dimension(&self) -> isize{
         if self.facets.is_empty(){
             return -1
@@ -158,6 +158,7 @@ impl SimplicialComplex {
         self.facets.iter().map(|v| v.dimension()).max().unwrap()
     }
     
+    /// Returns a boolean for whether the complex is pure, i.e. is every facet the same dimension.
     pub fn is_pure(&self) -> bool {
         if self.dimension() < 0{
             return false
@@ -165,6 +166,7 @@ impl SimplicialComplex {
         self.facets.iter().all(|facet| facet.dimension() == self.dimension())
     }
 
+    /// Returns the k-skeleton of the complex.
     pub fn k_skeleton(self, dim: usize) -> Self{
         let mut facets: Vec<Facet> = Vec::new();
         for facet in self.facets{
@@ -177,7 +179,8 @@ impl SimplicialComplex {
         }
         Self::new(facets)
     }
-
+    
+    /// Returns a vector of the k-dimensional faces contained in the complex
     pub fn k_faces(&self, dim: usize) -> Vec<Facet>{
         if self.dimension() < 0 {
             return Vec::new()
@@ -208,7 +211,9 @@ impl SimplicialComplex {
         gaussian_elimination(self.compute_k_boundary_matrix(dim))
     }
 
-    pub fn compute_k_boundary_matrix(&self, dim:usize) -> DMatrix<i32> {
+    /// Returns the k-dimensional boundary matrix of the complex. That is, a matrix M with rows indexed by the k faces and columns
+    /// indexed by the (k+1)-faces where $M_{\sigma,\tau} = 1$ iff $\sigma \subset \tau$.
+    pub fn compute_k_boundary_matrix(&self, dim: usize) -> DMatrix<i32> {
         //println!("Computing {}-dimensional boundary matrix", dim);
         let k_minus_one_simplices: Vec<Facet> = self.k_faces(dim-1);
         let k_simplices: Vec<Facet> = self.k_faces(dim);
@@ -227,6 +232,8 @@ impl SimplicialComplex {
         bdy_matrix
     }
 
+    /// Given a simplex \sigma inside of a complex sc, sc.star(simplex) is the subcomplex consisting of all simplices
+    /// that contain \sigma as a face.
     pub fn star(self, simplex: &Facet) -> Self{
         assert!(simplex.dimension().ge(&0), "Must provided a non-empty simplex");
         let k_faces = self.k_faces(simplex.dimension() as usize);
@@ -238,7 +245,7 @@ impl SimplicialComplex {
         Self { facets: self.star(&simplex).facets.into_iter().map(|f| f.link(&simplex)).collect()}
     }
 
-    pub fn has_subcomplex(&self, sc: &SimplicialComplex) -> bool{
+    pub fn contains(&self, sc: &SimplicialComplex) -> bool{
         if sc.dimension() == -1 {
             return true
         }

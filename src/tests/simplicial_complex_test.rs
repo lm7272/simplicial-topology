@@ -39,8 +39,8 @@ fn test_k_skeleton(){
 fn test_subcomplex(){
     let sc = sc![(0..10).collect_vec()];
     let sc2 = sc![(2..7).collect_vec()];
-    assert_eq!(sc.has_subcomplex(&sc2), true);
-    assert_eq!(sc2.has_subcomplex(&sc), false);
+    assert_eq!(sc.contains(&sc2), true);
+    assert_eq!(sc2.contains(&sc), false);
 }
 
 #[test]
