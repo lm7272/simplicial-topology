@@ -27,6 +27,7 @@ use simplicial_topology::{sc, simplicial_complex::SimplicialComplex};
 
 let sc = SimplicialComplex::new_from_vec(vec![vec![0, 1], vec![1, 2], vec![1, 2, 3], vec![3, 4], vec![1, 3, 4]]);
 let _sc = sc![vec![0, 1], vec![1, 2], vec![1, 2, 3], vec![3, 4], vec![1, 3, 4]]; // Note this is the shorthand macro to construct an identical SimplicialComplex to sc
+assert_eq!(sc, _sc);
 
 println!("The complex has {} facets", sc.facets.len()); // This will output "The complex has 3 facets"
 println!("The complex has dimension {}", sc.dimension()); // This will output "The complex has dimension 2"
@@ -41,13 +42,13 @@ sc.add_simplex(simplex![1,4,5]); // Here we add in the simplex [1,4,5] filling i
 println!("Betti vector: {:?}", sc.betti_numbers()); // This will output "Betti vector: [1, 1, 0]"
 println!("Euler characteristic: {}", sc.euler_characteristic()); // This will output "Euler characteristc: 0
 ```
-Note that we could construct `sc` above slightly more neatly:
+Note that we could construct the original `sc` above slightly more neatly:
 ```rust
 use simplicial_topology::{simplex, simplicial_complex::SimplicialComplex};
 
 let sigma: Facet = simplex![1,2,3];
 let tau: Facet = simplex![1,4,5];
-let sc: SimplicialComplex = sigma.boundary_as_complex().union(tau.boundary_as_complex()); // boundary_as_complex() returns the boundary of the simplex but as a SimplicialComplex, rather than Vec<Facet>
+let sc: SimplicialComplex = sigma.boundary_as_complex().union(&tau.boundary_as_complex()); // boundary_as_complex() returns the boundary of the simplex but as a SimplicialComplex, rather than Vec<Facet>
 ```
 The above is especially helpful when we want to interact with large simplicial spheres.
 
@@ -85,3 +86,13 @@ println!("{:?}", betti_numbers);
 let plot = betti_number_histogram(&betti_numbers);
 ```
 ![Plot](docs/betti_plot.png)
+
+### Other Operations
+```rust
+use simplicial_topology::{sc, simplex, simplicial_complex::SimplicialComplex};
+
+let sc1 = sc![vec![1,2,3]];
+let sc2 = simplex![2,3,4].boundary_as_complex();
+sc1.intersection(&sc2); // sc![vec![2,3]]);
+sc1.union(&sc2); // sc![vec![1,2,3], vec![3,4], vec![2,4]]
+```

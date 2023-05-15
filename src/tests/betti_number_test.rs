@@ -58,10 +58,10 @@ fn test_from_hypergraph_downward() {
 fn test_alexander_duality(){
     let sigma: Facet = simplex![1,2,3];
     let tau: Facet = simplex![1,4,5];
-    let mut sc: SimplicialComplex = sigma.boundary_as_complex().union(tau.boundary_as_complex());
+    let mut sc: SimplicialComplex = sigma.boundary_as_complex().union(&tau.boundary_as_complex());
     sc.add_simplex(simplex![1,2,3]);
     sc.add_simplex(simplex![6]);
-    /// sc.betti_numbers() = (2,1,0) reduced this becomes (1,1,0)
-    /// dual map b_i(X)->b_{3-i}(X*) gives (0,0,1,1) which unreduced is (1,0,1,1)
+    //sc.betti_numbers() = (2,1,0) reduced this becomes (1,1,0)
+    //dual map b_i(X)->b_{3-i}(X*) gives (0,0,1,1) which unreduced is (1,0,1,1)
     assert_eq!(sc.combinatorial_alexander_dual().betti_numbers(), vec![1,0,1,1])
 }

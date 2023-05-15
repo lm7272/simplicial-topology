@@ -60,3 +60,11 @@ fn test_empty_complex(){
     sc.add_simplex(sigma);
     assert_eq!(sc, sc![vec![1]]);
 }
+
+#[test]
+fn test_union_and_intersection(){
+    let sc1 = sc![vec![1,2,3]];
+    let sc2 = sc![vec![3,4,5]];
+    assert_eq!(sc1.union(&sc2), sc![vec![1,2,3], vec![3,4,5]]);
+    assert_eq!(sc1.intersection(&sc2), sc![vec![3]]);
+}

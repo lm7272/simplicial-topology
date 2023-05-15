@@ -20,7 +20,7 @@ fn main() {
     let mut sc: SimplicialComplex = sc![vec![1,2], vec![2,3], vec![1,3], vec![1,4], vec![4,5], vec![1,5]];
     let sigma: Facet = simplex![1,2,3];
     let tau: Facet = simplex![1,4,5];
-    let sc2: SimplicialComplex = sigma.boundary_as_complex().union(tau.boundary_as_complex());
+    let sc2: SimplicialComplex = sigma.boundary_as_complex().union(&tau.boundary_as_complex());
     //let sc2 = SimplicialComplex::new(bdy1);
     assert_eq!(sc, sc2);
     println!("External faces: {:?}", sc.k_external_faces(2));

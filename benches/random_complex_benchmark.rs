@@ -1,5 +1,4 @@
 use criterion::{criterion_group, criterion_main, Criterion};
-use itertools::Itertools;
 use simplicial_topology::simplicial_complex::random_simplicial_complex::{generate_random_hypergraph, par_generate_random_hypergraph};
 
 fn criterion_par_random_hypergraph_benchmark(c: &mut Criterion) {

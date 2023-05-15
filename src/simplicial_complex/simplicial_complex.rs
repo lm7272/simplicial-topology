@@ -61,14 +61,14 @@ impl SimplicialComplex {
     }
 
     /// Union of two complexes, returns a new complex
-    pub fn union(&self, mut sc: Self) -> Self{
+    pub fn union(&self, sc: &Self) -> Self{
         let mut facets = self.facets.clone();
-        facets.append(&mut sc.facets);
+        facets.append(&mut sc.clone().facets);
         return Self::new(facets)
     }
 
     /// Intersection of two complexes, returns a new complex
-    pub fn intersection(self, sc: Self) -> Self{
+    pub fn intersection(self, sc: &Self) -> Self{
         let mut facets: Vec<Facet> = Vec::new();
         for f in &self.facets{
             for g in &sc.facets{
@@ -167,9 +167,16 @@ impl SimplicialComplex {
     }
 
     pub fn k_skeleton(self, dim: usize) -> Self{
-        // TODO: Can be improved by only doing self.k_faces for maximal faces of dimension > dim
-        // and including all lower maximal faces
-        Self::new((0..(dim+1)).flat_map(|k| self.k_faces(k)).collect())
+        let mut facets: Vec<Facet> = Vec::new();
+        for facet in self.facets{
+            if facet.dimension() as usize > dim {
+                facets.append(&mut Self::new(vec![facet]).k_faces(dim));
+            }
+            else{
+                facets.push(facet);
+            }
+        }
+        Self::new(facets)
     }
 
     pub fn k_faces(&self, dim: usize) -> Vec<Facet>{
