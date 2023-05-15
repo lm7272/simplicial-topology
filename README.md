@@ -18,7 +18,8 @@ To use `simplicial-topology` in your Rust project, add the following to your `Ca
 
 ```toml
 [dependencies]
-simplicial_topology = { git = "https://github.com/lm7272/simplicial-topology.git" }
+simplicial_topology = {version = "0.1.0", features = ["sc_plot"]}
+# sc_plot is an optional feature for being able to plot histograms for random complex Betti numbers
 ```
 
 ### Basic Usage
@@ -72,7 +73,7 @@ pub enum Model {
 ```
 
 
-We can generate and plot the distribution of Betti numbers of a random simplicial complex. The below code returns an interactive plotly Histogram.
+We can generate and plot the distribution of Betti numbers of a random simplicial complex. The below code returns an interactive plotly Histogram. The `sc_plot` feature must be added to Cargo.toml for this functionality.
 ```rust
 use simplicial_topology::simplicial_complex::random_simplicial_complex::{generate_many_random_betti_numbers, Model};
 use simplicial_topology::graphics::plot::betti_number_histogram;
