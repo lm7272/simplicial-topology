@@ -125,7 +125,11 @@ pub fn randomly_select_items_from_vec<T: Clone>(v: &Vec<T>, p: f64) -> Vec<T> {
 /// Consume a vector and return a vector containing all subvectors of length k, preserving ordering
 pub fn get_subvectors(v: &Vec<usize>, k: usize) -> Vec<Vec<usize>> {
     v.into_iter().combinations(k)
-    .map(|subvec| subvec.into_iter().cloned().collect())
+    .map(|subvec| {
+        let mut v: Vec<usize> = subvec.into_iter().cloned().collect();
+        v.sort();
+        v
+    })
     .collect()
 }
 
