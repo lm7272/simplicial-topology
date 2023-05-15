@@ -1,6 +1,6 @@
 [package]
 name = "simplicial_topology"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Lewis Mead"]
 description = "Represent, manipulate, combine and perform computations on simplicial complexes"
