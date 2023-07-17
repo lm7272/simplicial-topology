@@ -18,7 +18,7 @@ To use `simplicial-topology` in your Rust project, add the following to your `Ca
 
 ```toml
 [dependencies]
-simplicial_topology = {version = "0.1.0", features = ["sc_plot"]}
+simplicial_topology = {version = "0.1.1", features = ["sc_plot"]}
 # sc_plot is an optional feature for being able to plot histograms for random complex Betti numbers
 ```
 

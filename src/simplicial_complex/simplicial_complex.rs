@@ -12,7 +12,7 @@ use super::simplex::{simplex_intersection, simplex_join};
 
 #[derive(Debug)]
 pub struct SimplicialComplex {
-    facets: Vec<Facet>,
+    pub facets: Vec<Facet>,
 }
 
 impl PartialEq for SimplicialComplex {
