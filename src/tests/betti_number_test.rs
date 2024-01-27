@@ -1,7 +1,7 @@
 #[cfg(test)]
 
 use crate::simplicial_complex::{simplex::{Facet, Simplex}, simplicial_complex::SimplicialComplex, hypergraph::Hypergraph};
-use crate::simplex;
+use crate::{sc, simplex};
 
 #[test]
 fn test_spheres() {
@@ -53,6 +53,29 @@ fn test_from_hypergraph_downward() {
     };
     let sc = hg.par_downward_closure();
     assert_eq!(sc.betti_numbers(), vec![2,1,0])
+}
+
+#[test]
+fn test_from_hypergraph_downward2() {
+    let hg = Hypergraph {
+        vertices: vec![1, 2, 3, 4],
+        hyperedges: vec![
+            vec![1, 2],
+            vec![2, 3],
+            vec![1, 3],
+            vec![1, 4],
+            vec![2, 4],
+            vec![3, 4],
+            vec![1, 2, 3],
+            vec![1, 2, 4],
+            vec![1, 3, 4],
+            vec![2, 3, 4],
+            vec![1, 2, 3, 4],
+        ],
+    };
+    let sc = hg.par_downward_closure();
+    let sc_golden = sc![vec![2,1,3,4]];
+    assert_eq!(sc, sc_golden)
 }
 #[test]
 fn test_alexander_duality(){
